@@ -1,56 +1,62 @@
-import { mount } from "./three";
-import "./style.css";
 import {
   AnimationClip,
-  AnimationMixer,
   BoxGeometry,
-  Euler,
+  DirectionalLight,
+  DirectionalLightHelper,
   Mesh,
-  MeshBasicMaterial,
-  Quaternion,
-  VectorKeyframeTrack,
-} from "three";
+  MeshStandardMaterial,
+} from 'three';
+import { mount } from './three';
+import { AnimationMixerPlus } from './animation/AnimationMixerPlus';
+import { FunctionKeyframeTrack } from './animation/FunctionKeyframeTrack';
 
-const root: HTMLElement | null = document.getElementById("app");
+const app = document.getElementById('app') as HTMLElement;
 
-if (root) {
-  const tjs = mount(root);
+class Box extends Mesh<BoxGeometry, MeshStandardMaterial> {
+  constructor() {
+    super(new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color: 'white' }));
+  }
 
-  const box = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial());
+  girar() {
+    this.rotation.z += Math.PI / 8;
+  }
 
-  tjs.scene.add(box);
+  cambiarColor(color: string) {
+    this.material.color.set(color);
+  }
+}
 
-  const mixer = new AnimationMixer(box);
+if (app) {
+  const webgl = mount(app);
 
-  tjs.init();
+  webgl.init();
 
-  const q0 = new Quaternion().setFromEuler(new Euler(0, 0, 0)); // 0°
-  const q1 = new Quaternion().setFromEuler(new Euler(0, 0, Math.PI)); // 180°
-  const q2 = new Quaternion().setFromEuler(new Euler(0, 0, Math.PI * 2));
+  const box = new Box();
+  const light = new DirectionalLight('#ffffff', 4);
 
-  const values = [
-    q0.x,
-    q0.y,
-    q0.z,
-    q0.w,
-    q1.x,
-    q1.y,
-    q1.z,
-    q1.w,
-    q2.x,
-    q2.y,
-    q2.z,
-    q2.w,
+  const mixer = new AnimationMixerPlus(box);
+
+  webgl.scene.add(box);
+  webgl.scene.add(light);
+
+  light.position.y = 3;
+  light.position.z = 15;
+
+  webgl.scene.add(new DirectionalLightHelper(light));
+
+  const tracks = [
+    new FunctionKeyframeTrack([0, 1], ['', 'girar']),
+    new FunctionKeyframeTrack([1, 1.5, 2], ['cambiarColor:red', 'cambiarColor:blue', '']),
   ];
-
-  const tracks = [new VectorKeyframeTrack(".quaternion", [0, 1, 6], values)];
-  const clip = new AnimationClip("test", -1, tracks);
-
-  tjs.events.addEventListener("tick", ({ dt }) => mixer.update(dt));
-
+  const clip = new AnimationClip('test', -1, tracks);
   const action = mixer.clipAction(clip);
+
   action.play();
 
-  tjs.camera.lookAt(box.position);
-  tjs.camera.position.set(0, 0, 15);
+  webgl.events.addEventListener('tick', ({ dt }) => {
+    mixer.update(dt);
+  });
+
+  webgl.camera.lookAt(box.position);
+  webgl.camera.position.set(-2, 2, 15);
 }
