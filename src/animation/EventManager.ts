@@ -23,7 +23,7 @@ export class EventManager {
       try {
         fn.apply(root, [...args, event]);
       } catch (error) {
-        console.error(`[EventTrackManager] Error ejecutando '${event.raw}':`, error);
+        console.error(`[EventTrackManager] Error ejecutando '${event.name}':`, error);
       }
     } else {
       console.warn(`[EventTrackManager] La función '${event.name}' no existe en root.`);

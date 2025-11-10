@@ -4,7 +4,6 @@ import type { FunctionKeyframeTrack } from '../animation/FunctionKeyframeTrack';
 export interface AnimationEvent {
   action: AnimationAction;
   name: string;
-  raw: string;
   args: Array<string>;
   frame: {
     time: number;
@@ -25,13 +24,12 @@ export function generateEventTracks(tracks: FunctionKeyframeTrack[], action: Ani
       const raw = values[i].toString().trim();
       const currentTime = times[i];
 
-      if (raw == '') continue;
+      if (raw === '') continue;
 
       const root = action.getRoot();
 
       const event: AnimationEvent = {
         action,
-        raw,
         name: '',
         args: [],
         frame: {
