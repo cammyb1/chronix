@@ -53,6 +53,8 @@ if (app) {
   const clip = new AnimationClip('test', -1, tracks);
   const action = mixer.clipAction(clip);
 
+  mixer.timeScale = 0.1;
+
   action.play();
 
   webgl.events.on('tick', ({ dt }) => {
