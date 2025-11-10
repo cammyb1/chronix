@@ -1,5 +1,5 @@
 import type { AnimationAction } from 'three';
-import type { FunctionKeyframeTrack } from '../animation/FunctionKeyframeTrack';
+import type { FunctionKeyframeTrack } from '../core/FunctionKeyframeTrack';
 
 export interface AnimationEvent {
   action: AnimationAction;

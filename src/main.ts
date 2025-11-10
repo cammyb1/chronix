@@ -8,8 +8,8 @@ import {
   NumberKeyframeTrack,
 } from 'three';
 import { mount } from './three';
-import { AnimationMixerPlus } from './animation/AnimationMixerPlus';
-import { FunctionKeyframeTrack } from './animation/FunctionKeyframeTrack';
+import { AnimationMixerPlus } from './core/AnimationMixerPlus';
+import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
 
 const app = document.getElementById('app') as HTMLElement;
 
