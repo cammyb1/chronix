@@ -5,9 +5,12 @@ export interface ATLEvents {
   tick: { dt: number };
 }
 
+const div = document.createElement('div');
+div.className = 'timeline-container';
+
 export class AnimationTimeLine<T = undefined> extends EventBus<ATLEvents> {
   duration: number;
-  container: HTMLElement;
+  dom: HTMLElement;
   tracks: KeyframeTrack[];
   root: T | undefined;
 
@@ -15,12 +18,12 @@ export class AnimationTimeLine<T = undefined> extends EventBus<ATLEvents> {
     super();
     this.duration = 0;
     this.tracks = [];
+    this.dom = div;
 
     if (container) {
-      this.container = container;
+      container.appendChild(this.dom);
     } else {
-      this.container = document.createElement('div');
-      document.appendChild(this.container);
+      document.body.appendChild(this.dom);
     }
   }
 
@@ -30,7 +33,7 @@ export class AnimationTimeLine<T = undefined> extends EventBus<ATLEvents> {
   }
 
   dispose() {
-    this.container.parentNode?.removeChild(this.container);
+    this.dom.parentNode?.removeChild(this.dom);
   }
 
   setDuration(dur: number): this {

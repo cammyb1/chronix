@@ -11,6 +11,9 @@ import { mount } from './three';
 import { AnimationMixerPlus } from './core/AnimationMixerPlus';
 import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
 
+import './styles.css';
+import { AnimationTimeLine } from './timeline/AnimationTimeLine';
+
 const app = document.getElementById('app') as HTMLElement;
 
 class Box extends Mesh<BoxGeometry, MeshStandardMaterial> {
@@ -38,6 +41,10 @@ if (app) {
 
   light.position.y = 3;
   light.position.z = 15;
+
+  const timeline = new AnimationTimeLine<Box>(app);
+
+  timeline.bind(box);
 
   webgl.scene.add(new DirectionalLightHelper(light));
 
