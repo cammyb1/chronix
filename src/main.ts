@@ -45,6 +45,7 @@ if (app) {
     new NumberKeyframeTrack('.rotation[x]', [0, 1, 2], [0, Math.PI, 0]),
     new NumberKeyframeTrack('.rotation[z]', [0, 1, 2], [0, Math.PI, 0]),
     new FunctionKeyframeTrack(
+      'testing',
       [0.75, 1.5, 2],
       ['cambiarColor:red', 'cambiarColor:blue', 'cambiarColor:white'],
     ),

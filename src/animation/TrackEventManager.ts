@@ -2,7 +2,7 @@ import type { AnimationAction } from 'three';
 import type { FunctionKeyframeTrack } from './FunctionKeyframeTrack';
 import { generateEventTracks, type AnimationEvent } from '../utils/track.utils';
 
-export class EventManager {
+export class TrackEventManager {
   private events: AnimationEvent[] = [];
 
   registerTracks(tracks: FunctionKeyframeTrack[], action: AnimationAction) {
@@ -12,7 +12,7 @@ export class EventManager {
     }
   }
 
-  private trigger(event: AnimationEvent) {
+  trigger(event: AnimationEvent) {
     const { name, action, args } = event;
 
     const root = action.getRoot();
@@ -23,10 +23,10 @@ export class EventManager {
       try {
         fn.apply(root, [...args, event]);
       } catch (error) {
-        console.error(`[EventTrackManager] Error ejecutando '${event.name}':`, error);
+        console.error(`[EventTrackManager] Error on '${event.name}' execution:`, error);
       }
     } else {
-      console.warn(`[EventTrackManager] La función '${event.name}' no existe en root.`);
+      console.warn(`[EventTrackManager] Function '${event.name}' does not exist in root.`);
     }
   }
 

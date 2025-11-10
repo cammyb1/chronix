@@ -1,21 +1,21 @@
 import {
-  AnimationAction,
-  AnimationClip,
-  AnimationMixer,
-  AnimationObjectGroup,
-  KeyframeTrack,
+  type AnimationAction,
+  type AnimationClip,
+  type AnimationObjectGroup,
   type AnimationBlendMode,
   type Object3D,
+  type KeyframeTrack,
+  AnimationMixer,
 } from 'three';
 import { FunctionKeyframeTrack } from './FunctionKeyframeTrack';
-import { EventManager } from './EventManager';
+import { TrackEventManager } from './TrackEventManager';
 
 export class AnimationMixerPlus extends AnimationMixer {
-  protected eventManager: EventManager;
+  protected eventManager: TrackEventManager;
 
   constructor(root: Object3D | AnimationObjectGroup) {
     super(root);
-    this.eventManager = new EventManager();
+    this.eventManager = new TrackEventManager();
   }
 
   override update(dt: number): this {
@@ -29,11 +29,11 @@ export class AnimationMixerPlus extends AnimationMixer {
     optionalRoot?: Object3D,
     blendMode?: AnimationBlendMode,
   ): AnimationAction {
-    const isTrack = <T extends KeyframeTrack>(t: T) => t instanceof FunctionKeyframeTrack;
+    const isFnTrack = <T extends KeyframeTrack>(t: T) => t instanceof FunctionKeyframeTrack;
     const cloned = clip.clone();
 
-    cloned.tracks = cloned.tracks.filter((t) => !isTrack(t));
-    const fnTracks = clip.tracks.filter(isTrack);
+    cloned.tracks = cloned.tracks.filter((t) => !isFnTrack(t));
+    const fnTracks = clip.tracks.filter(isFnTrack);
     const action = super.clipAction(cloned, optionalRoot, blendMode);
 
     if (fnTracks.length > 0) {

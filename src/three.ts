@@ -1,28 +1,15 @@
-import {
-  PerspectiveCamera,
-  WebGLRenderer,
-  Scene,
-  Clock,
-  EventDispatcher,
-  type BaseEvent,
-} from "three";
+import { PerspectiveCamera, WebGLRenderer, Scene, Clock } from 'three';
+import { EventBus } from './core/EventBus';
 
 export interface TEvents {
   resize: {};
   tick: { dt: number; elapsed: number };
-  pre_render: {};
-  post_render: {};
 }
 
 export function mount(domElement: HTMLElement) {
   let size = { x: domElement.clientWidth, y: domElement.clientHeight };
   const scene: Scene = new Scene();
-  const camera: PerspectiveCamera = new PerspectiveCamera(
-    35,
-    size.x / size.y,
-    0.1,
-    2000
-  );
+  const camera: PerspectiveCamera = new PerspectiveCamera(35, size.x / size.y, 0.1, 2000);
   const renderer: WebGLRenderer = new WebGLRenderer({ antialias: true });
 
   const clock = new Clock(false);
@@ -33,32 +20,14 @@ export function mount(domElement: HTMLElement) {
     scene,
     camera,
     renderer,
-    events: new (class extends EventDispatcher<TEvents> {
-      on<T extends Extract<keyof TEvents, string>>(
-        type: T,
-        cb: (event: TEvents[T]) => void
-      ) {
-        if (this.hasEventListener(type, cb)) return;
-        this.addEventListener(type, cb);
-      }
-      off<T extends Extract<keyof TEvents, string>>(
-        type: T,
-        cb: (event: TEvents[T]) => void
-      ) {
-        if (!this.hasEventListener(type, cb)) return;
-        this.removeEventListener(type, cb);
-      }
-      trigger(payload: BaseEvent<keyof TEvents>) {
-        this.dispatchEvent({ ...payload });
-      }
-    })(),
+    events: new EventBus<TEvents>(),
     _tick() {
       if (!this._started) return;
 
       renderer.render(scene, camera);
 
-      this.events.dispatchEvent({
-        type: "tick",
+      this.events.trigger({
+        type: 'tick',
         dt: clock.getDelta(),
         elapsed: clock.getElapsedTime(),
       });
@@ -69,7 +38,7 @@ export function mount(domElement: HTMLElement) {
       renderer.setSize(domElement.clientWidth, domElement.clientHeight);
       renderer.render(scene, camera);
 
-      this.events.dispatchEvent({ type: "resize" });
+      this.events.trigger({ type: 'resize' });
     },
     init(): typeof this {
       if (this._started) return this;
@@ -93,7 +62,7 @@ export function mount(domElement: HTMLElement) {
 
       renderer.domElement.parentNode?.removeChild(renderer.domElement);
       renderer.setAnimationLoop(null);
-      domElement.removeEventListener("resize", this._resize.bind(this));
+      domElement.removeEventListener('resize', this._resize.bind(this));
 
       this._observer?.unobserve(domElement);
       this._observer?.disconnect();
