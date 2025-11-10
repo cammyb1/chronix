@@ -5,6 +5,7 @@ import {
   DirectionalLightHelper,
   Mesh,
   MeshStandardMaterial,
+  NumberKeyframeTrack,
 } from 'three';
 import { mount } from './three';
 import { AnimationMixerPlus } from './animation/AnimationMixerPlus';
@@ -15,10 +16,6 @@ const app = document.getElementById('app') as HTMLElement;
 class Box extends Mesh<BoxGeometry, MeshStandardMaterial> {
   constructor() {
     super(new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color: 'white' }));
-  }
-
-  girar() {
-    this.rotation.z += Math.PI / 8;
   }
 
   cambiarColor(color: string) {
@@ -45,15 +42,19 @@ if (app) {
   webgl.scene.add(new DirectionalLightHelper(light));
 
   const tracks = [
-    new FunctionKeyframeTrack([0, 1], ['', 'girar']),
-    new FunctionKeyframeTrack([1, 1.5, 2], ['cambiarColor:red', 'cambiarColor:blue', '']),
+    new NumberKeyframeTrack('.rotation[x]', [0, 1, 2], [0, Math.PI, 0]),
+    new NumberKeyframeTrack('.rotation[z]', [0, 1, 2], [0, Math.PI, 0]),
+    new FunctionKeyframeTrack(
+      [0.75, 1.5, 2],
+      ['cambiarColor:red', 'cambiarColor:blue', 'cambiarColor:white'],
+    ),
   ];
   const clip = new AnimationClip('test', -1, tracks);
   const action = mixer.clipAction(clip);
 
   action.play();
 
-  webgl.events.addEventListener('tick', ({ dt }) => {
+  webgl.events.on('tick', ({ dt }) => {
     mixer.update(dt);
   });
 
