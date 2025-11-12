@@ -9,7 +9,8 @@ export class EventBus<E extends {} = {}> extends EventDispatcher<E> {
     if (!this.hasEventListener(type, cb)) return;
     this.removeEventListener(type, cb);
   }
-  trigger<T extends Extract<keyof E, string>>(payload: BaseEvent<T> & E[T]) {
-    this.dispatchEvent({ ...payload });
+  trigger<T extends Extract<keyof E, string>>(type: T, payload?: E[T]) {
+    const event = { type, ...(payload || {}) } as BaseEvent<T> & E[T];
+    this.dispatchEvent(event);
   }
 }

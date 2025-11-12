@@ -1,5 +1,6 @@
-import { PerspectiveCamera, WebGLRenderer, Scene, Clock } from 'three';
+import { PerspectiveCamera, WebGLRenderer, Scene } from 'three';
 import { EventBus } from './core/EventBus';
+import { Time } from './core/Time';
 
 export interface TEvents {
   resize: {};
@@ -12,8 +13,6 @@ export function mount(domElement: HTMLElement) {
   const camera: PerspectiveCamera = new PerspectiveCamera(35, size.x / size.y, 0.1, 2000);
   const renderer: WebGLRenderer = new WebGLRenderer({ antialias: true });
 
-  const clock = new Clock(false);
-
   return {
     _started: false,
     _observer: null as ResizeObserver | null,
@@ -25,12 +24,6 @@ export function mount(domElement: HTMLElement) {
       if (!this._started) return;
 
       renderer.render(scene, camera);
-
-      this.events.trigger({
-        type: 'tick',
-        dt: clock.getDelta(),
-        elapsed: clock.getElapsedTime(),
-      });
     },
     _resize() {
       camera.aspect = domElement.clientWidth / domElement.clientHeight;
@@ -38,17 +31,17 @@ export function mount(domElement: HTMLElement) {
       renderer.setSize(domElement.clientWidth, domElement.clientHeight);
       renderer.render(scene, camera);
 
-      this.events.trigger({ type: 'resize' });
+      this.events.trigger('resize');
     },
     init(): typeof this {
       if (this._started) return this;
       this._started = true;
-      clock.start();
+      Time.start();
 
       domElement.appendChild(renderer.domElement);
 
       renderer.setSize(size.x, size.y);
-      renderer.setAnimationLoop(this._tick.bind(this));
+      Time.on('loop', this._tick.bind(this));
 
       this._observer = new ResizeObserver(this._resize.bind(this));
       this._observer.observe(domElement);
@@ -58,14 +51,15 @@ export function mount(domElement: HTMLElement) {
     dispose(): typeof this {
       if (!this._started) return this;
       this._started = false;
-      clock.stop();
 
       renderer.domElement.parentNode?.removeChild(renderer.domElement);
-      renderer.setAnimationLoop(null);
+      Time.off('loop', this._tick.bind(this));
       domElement.removeEventListener('resize', this._resize.bind(this));
 
       this._observer?.unobserve(domElement);
       this._observer?.disconnect();
+
+      Time.stop();
 
       return this;
     },

@@ -1,39 +1,41 @@
-import type { KeyframeTrack } from 'three';
+import type { AnimationClip, KeyframeTrack, Object3D } from 'three';
 import { EventBus } from '../core/EventBus';
+import { AnimationTrack } from './AnimationTrack';
+import { TimeLineUI } from '../ui/ui.manager';
 
-export interface ATLEvents {
-  tick: { dt: number };
-}
+export interface ATLEvents {}
 
-const div = document.createElement('div');
-div.className = 'timeline-container';
-
-export class AnimationTimeLine<T = undefined> extends EventBus<ATLEvents> {
+export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   duration: number;
-  dom: HTMLElement;
-  tracks: KeyframeTrack[];
+  ui: TimeLineUI;
+  tracks: Array<{ order: number; track: AnimationTrack }>;
   root: T | undefined;
 
-  constructor(container?: HTMLElement) {
+  running: boolean = false;
+  time: number = 0;
+
+  constructor() {
     super();
     this.duration = 0;
     this.tracks = [];
-    this.dom = div;
-
-    if (container) {
-      container.appendChild(this.dom);
-    } else {
-      document.body.appendChild(this.dom);
-    }
+    this.ui = new TimeLineUI();
   }
 
-  bind(target: T): this {
+  get dom(): HTMLElement {
+    return this.ui.dom;
+  }
+
+  attach(target: T): this {
     this.root = target;
     return this;
   }
 
-  dispose() {
-    this.dom.parentNode?.removeChild(this.dom);
+  append(track: KeyframeTrack): this {
+    if (!this.tracks.find((t) => t.track.root === track)) {
+      this.tracks.push({ order: this.tracks.length - 1, track: new AnimationTrack(track) });
+    }
+
+    return this;
   }
 
   setDuration(dur: number): this {
@@ -41,11 +43,49 @@ export class AnimationTimeLine<T = undefined> extends EventBus<ATLEvents> {
     return this;
   }
 
-  update(dt: number) {
-    this.trigger({ type: 'tick', dt });
+  forward(time: number): this {
+    this.time += time;
+
+    return this;
   }
 
-  // TODO: Create timeline from existing clip
-  import() {}
+  backward(time: number): this {
+    if (this.time - time < 0) this.time = 0;
+    this.time -= time;
+
+    return this;
+  }
+
+  clear() {
+    this.tracks = [];
+  }
+
+  start(): this {
+    this.time = 0;
+    this.running = true;
+    return this;
+  }
+
+  stop(): this {
+    this.time = 0;
+    this.running = false;
+    return this;
+  }
+
+  update(dt: number) {
+    if (this.running) {
+      this.time += dt;
+
+      if (this.time >= this.duration) {
+        this.time = 0;
+      }
+    }
+  }
+
+  import(clip: AnimationClip) {
+    clip.tracks.forEach((track) => this.append(track));
+    this.duration = clip.duration;
+  }
+
   export() {}
 }

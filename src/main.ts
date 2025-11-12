@@ -13,6 +13,7 @@ import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
 
 import './styles.css';
 import { AnimationTimeLine } from './timeline/AnimationTimeLine';
+import { Time } from './core/Time';
 
 const app = document.getElementById('app') as HTMLElement;
 
@@ -42,9 +43,9 @@ if (app) {
   light.position.y = 3;
   light.position.z = 15;
 
-  const timeline = new AnimationTimeLine<Box>(app);
+  const timeline = new AnimationTimeLine().attach(box);
 
-  timeline.bind(box);
+  document.body.appendChild(timeline.dom);
 
   webgl.scene.add(new DirectionalLightHelper(light));
 
@@ -60,12 +61,14 @@ if (app) {
   const clip = new AnimationClip('test', -1, tracks);
   const action = mixer.clipAction(clip);
 
+  timeline.ui.registerTracks(clip.tracks);
+
   mixer.timeScale = 0.1;
 
   action.play();
 
-  webgl.events.on('tick', ({ dt }) => {
-    mixer.update(dt);
+  Time.on('loop', () => {
+    mixer.update(Time.delta);
   });
 
   webgl.camera.lookAt(box.position);
