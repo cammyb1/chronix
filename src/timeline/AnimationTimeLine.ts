@@ -1,6 +1,5 @@
-import type { AnimationClip, KeyframeTrack, Object3D } from 'three';
+import type { KeyframeTrack, Object3D } from 'three';
 import { EventBus } from '../core/EventBus';
-import { AnimationTrack } from './AnimationTrack';
 import { TimeLineUI } from '../ui/ui.manager';
 
 export interface ATLEvents {}
@@ -8,7 +7,7 @@ export interface ATLEvents {}
 export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   duration: number;
   ui: TimeLineUI;
-  tracks: Array<{ order: number; track: AnimationTrack }>;
+  tracks: KeyframeTrack[];
   root: T | undefined;
 
   running: boolean = false;
@@ -21,6 +20,11 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     this.ui = new TimeLineUI();
   }
 
+  attachUI(ui: TimeLineUI) {
+    this.ui = ui;
+    this.ui.registerTracks(this.tracks);
+  }
+
   get dom(): HTMLElement {
     return this.ui.dom;
   }
@@ -30,13 +34,7 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     return this;
   }
 
-  append(track: KeyframeTrack): this {
-    if (!this.tracks.find((t) => t.track.root === track)) {
-      this.tracks.push({ order: this.tracks.length - 1, track: new AnimationTrack(track) });
-    }
-
-    return this;
-  }
+  resetDuration() {}
 
   setDuration(dur: number): this {
     this.duration = dur;
@@ -54,6 +52,10 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     this.time -= time;
 
     return this;
+  }
+
+  fromArray(tracks: KeyframeTrack[]) {
+    this.tracks = tracks;
   }
 
   clear() {
@@ -81,11 +83,4 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
       }
     }
   }
-
-  import(clip: AnimationClip) {
-    clip.tracks.forEach((track) => this.append(track));
-    this.duration = clip.duration;
-  }
-
-  export() {}
 }

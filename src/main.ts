@@ -38,7 +38,7 @@ if (app) {
   const mixer = new AnimationMixerPlus(box);
 
   webgl.scene.add(box);
-  webgl.scene.add(light);
+  webgl.scene.add(light); 
 
   light.position.y = 3;
   light.position.z = 15;
@@ -58,14 +58,8 @@ if (app) {
       ['cambiarColor:red', 'cambiarColor:blue', 'cambiarColor:white'],
     ),
   ];
-  const clip = new AnimationClip('test', -1, tracks);
-  const action = mixer.clipAction(clip);
 
-  timeline.ui.registerTracks(clip.tracks);
-
-  mixer.timeScale = 0.1;
-
-  action.play();
+  timeline.fromArray(tracks);
 
   Time.on('loop', () => {
     mixer.update(Time.delta);
