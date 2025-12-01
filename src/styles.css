@@ -1,12 +1,75 @@
 .timeline-container {
   position: absolute;
   bottom: 0;
-  width: 100%;
-  height: 25%;
+  width: 70%;
+  height: 20%;
   background: #dddddd;
-  outline: 2px solid #cccccc;
+  border: 2px solid #bbbbbb;
+  border-radius: 5px;
+  transform: translate(calc(50% - 35%), 0);
+  overflow: hidden;
+}
+
+.track-controls {
+  width: 100%;
+  height: 15%;
+  background: #858585;
+}
+
+.track-container {
+  width: 100%;
+  height: 85%;
+}
+
+.player-ruler {
+  height: 100%;
+  background: tomato;
+  width: 1.5px;
+  left: 20%;
+  position: absolute;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.player-ruler::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -4.5px;
+  border-style: solid;
+  border-width: 5px 10px 5px 0;
+  border-color: transparent tomato transparent transparent;
+  transform: rotate(-90deg);
+}
+
+.track-item {
+  width: 100%;
+  height: fit-content;
+  border: 1px solid #cccccc;
+  display: flex;
+}
+
+.keyframe-container {
+  width: 80%;
+  position: relative;
+  overflow: hidden;
+}
+
+.keyframe {
+  background: #333333;
+  padding: 3px;
+  top: calc(50% - 1.5px);
+  position: absolute;
+  border-radius: 50%;
+}
+
+.keyframe:hover {
+  transform: scale(150%);
 }
 
 .property-name {
-  color: black;
+  color: #333333;
+  width: calc(20% - 1rem);
+  background: #bbbbbb;
+  padding: 0.5rem;
 }

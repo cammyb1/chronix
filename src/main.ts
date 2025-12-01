@@ -13,7 +13,6 @@ import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
 
 import './styles.css';
 import { AnimationTimeLine } from './timeline/AnimationTimeLine';
-import { Time } from './core/Time';
 
 const app = document.getElementById('app') as HTMLElement;
 
@@ -38,7 +37,7 @@ if (app) {
   const mixer = new AnimationMixerPlus(box);
 
   webgl.scene.add(box);
-  webgl.scene.add(light); 
+  webgl.scene.add(light);
 
   light.position.y = 3;
   light.position.z = 15;
@@ -59,10 +58,14 @@ if (app) {
     ),
   ];
 
+  const action = mixer.clipAction(new AnimationClip('test', -1, tracks))
+  action.play();
+
   timeline.fromArray(tracks);
 
-  Time.on('loop', () => {
-    mixer.update(Time.delta);
+  timeline.on('timeupdate', (e) => {
+    action.time = e.time;
+    mixer.update(0);
   });
 
   webgl.camera.lookAt(box.position);
