@@ -1,13 +1,12 @@
-import type { KeyframeTrack, Object3D } from 'three';
+import { AnimationClip, type KeyframeTrack, type Object3D } from 'three';
 import { EventBus } from '../core/EventBus';
 import TimeLineUI from '../ui/TimeLineUI';
 
 export interface ATLEvents { timeupdate: { time: number } }
 
 export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
-  duration: number;
   ui: TimeLineUI;
-  tracks: KeyframeTrack[];
+  clip: AnimationClip;
   root: T | undefined;
 
   running: boolean = false;
@@ -15,8 +14,7 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
 
   constructor(ui: TimeLineUI = new TimeLineUI()) {
     super();
-    this.duration = 0;
-    this.tracks = [];
+    this.clip = new AnimationClip('test', -1, []);
     this.ui = ui;
 
     this.ui.on('timeupdate', (e) => {
@@ -30,7 +28,7 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
       this.ui.dom.parentNode.removeChild(this.ui.dom);
     }
     this.ui = ui;
-    this.ui.removeTracks().registerTracks(this.tracks);
+    this.ui.removeTracks().registerTracks(this.clip.tracks);
   }
 
   get dom(): HTMLElement {
@@ -43,26 +41,19 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   }
 
   resetDuration() {
-    let maxTime = -Infinity;
-    this.tracks.forEach((t: KeyframeTrack) => {
-      const { times } = t;
-      times.forEach((ut) => {
-        if (ut > maxTime) maxTime = ut;
-      });
-    });
-    this.setDuration(maxTime);
+    this.clip.resetDuration();
   }
 
   setDuration(dur: number): this {
-    this.duration = dur;
+    this.clip.duration = dur;
     this.ui.setDuration(dur);
     return this;
   }
 
   forward(time: number): this {
     this.time += time;
-    if (this.time > this.duration) {
-      this.time = this.duration;
+    if (this.time > this.clip.duration) {
+      this.time = this.clip.duration;
     }
 
     return this;
@@ -78,13 +69,13 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   }
 
   fromArray(tracks: KeyframeTrack[]) {
-    this.tracks = tracks;
+    this.clip.tracks = tracks;
     this.resetDuration();
-    this.ui.removeTracks().registerTracks(this.tracks);
+    this.ui.removeTracks().registerTracks(this.clip.tracks);
   }
 
   clear() {
-    this.tracks = [];
+    this.clip.tracks = [];
     this.time = 0;
   }
 

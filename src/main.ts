@@ -57,11 +57,11 @@ if (app) {
       ['cambiarColor:red', 'cambiarColor:blue', 'cambiarColor:white'],
     ),
   ];
+  timeline.fromArray(tracks);
 
-  const action = mixer.clipAction(new AnimationClip('test', -1, tracks))
+  const action = mixer.clipAction(timeline.clip);
   action.play();
 
-  timeline.fromArray(tracks);
 
   timeline.on('timeupdate', (e) => {
     action.time = e.time;
