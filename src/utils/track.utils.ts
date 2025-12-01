@@ -1,5 +1,14 @@
-import type { AnimationAction } from 'three';
-import type { FunctionKeyframeTrack } from '../core/FunctionKeyframeTrack';
+import {
+  type AnimationAction,
+  BooleanKeyframeTrack,
+  KeyframeTrack,
+  ColorKeyframeTrack,
+  NumberKeyframeTrack,
+  QuaternionKeyframeTrack,
+  StringKeyframeTrack,
+  VectorKeyframeTrack,
+} from 'three';
+import { FunctionKeyframeTrack } from '../core/FunctionKeyframeTrack';
 
 export interface AnimationEvent {
   action: AnimationAction;
@@ -9,6 +18,37 @@ export interface AnimationEvent {
     time: number;
     lastTime: number;
   };
+}
+
+export enum Keyframes {
+  BOOLEAN = 0,
+  COLOR = 1,
+  NUMBER = 2,
+  QUAT = 3,
+  STRING = 4,
+  VECTOR = 5,
+  FUNC = 6,
+}
+
+export function getTrackByType(name: Keyframes) {
+  switch (name) {
+    case Keyframes.BOOLEAN:
+      return BooleanKeyframeTrack;
+    case Keyframes.COLOR:
+      return ColorKeyframeTrack;
+    case Keyframes.NUMBER:
+      return NumberKeyframeTrack;
+    case Keyframes.STRING:
+      return StringKeyframeTrack;
+    case Keyframes.FUNC:
+      return FunctionKeyframeTrack;
+    case Keyframes.QUAT:
+      return QuaternionKeyframeTrack;
+    case Keyframes.VECTOR:
+      return VectorKeyframeTrack;
+    default:
+      return KeyframeTrack;
+  }
 }
 
 export function generateEventTracks(tracks: FunctionKeyframeTrack[], action: AnimationAction) {

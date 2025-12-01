@@ -7,11 +7,10 @@ import {
   NumberKeyframeTrack,
 } from 'three';
 import { mount } from './three';
-import { AnimationMixerPlus } from './core/AnimationMixerPlus';
-import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
 
-import './styles.css';
+import './css/styles.css';
 import { AnimationTimeLine } from './timeline/AnimationTimeLine';
+import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
 
 const app = document.getElementById('app') as HTMLElement;
 
@@ -33,15 +32,13 @@ if (app) {
   const box = new Box();
   const light = new DirectionalLight('#ffffff', 4);
 
-  const mixer = new AnimationMixerPlus(box);
-
   webgl.scene.add(box);
   webgl.scene.add(light);
 
   light.position.y = 3;
   light.position.z = 15;
 
-  const timeline = new AnimationTimeLine().attach(box);
+  const timeline = new AnimationTimeLine(box);
 
   document.body.appendChild(timeline.dom);
 
@@ -57,31 +54,8 @@ if (app) {
       ['cambiarColor:red', 'cambiarColor:blue', 'cambiarColor:white'],
     ),
   ];
-  let scale = 1;
-
-  window.addEventListener('wheel', (e) => {
-    const dir = Math.sign(e.deltaY * -0.01);
-    scale += 0.25 * dir;
-
-    if (scale > 5) {
-      scale = 5;
-    }
-    if (scale < 0.25) {
-      scale = 0.25;
-    }
-
-    mixer.timeScale = scale;
-    timeline.setTimeScale(mixer.timeScale);
-  });
 
   timeline.fromArray(tracks);
-
-  const action = mixer.clipAction(timeline.clip);
-  action.play();
-
-  timeline.on('timeupdate', (e) => {
-    mixer.setTime(e.time);
-  });
 
   webgl.camera.lookAt(box.position);
   webgl.camera.position.set(-2, 2, 15);

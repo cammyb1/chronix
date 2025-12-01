@@ -1,31 +1,34 @@
 import type { KeyframeTrack } from 'three';
-import UIElement from './UIElement';
-import TrackUI from './TrackUI';
-import TrackControlsUI from './TrackControlsUI';
-import TrackContainerUI from './TrackContainerUI';
+import { InputElement, UIElement, type ChangeEvent } from './BaseUI';
+import { TrackControlsUI, TracksUI } from './TrackUI';
 
 export default class TimeLineUI extends UIElement<{ timeupdate: { time: number } }> {
-  tracks: TrackUI[] = [];
+  tracksContainer: TracksUI;
   duration: number;
   scale: number;
-  container: TrackContainerUI;
 
   constructor() {
     super(document.createElement('div'));
 
     this.addClass('timeline-container');
 
-    this.container = new TrackContainerUI();
-
     this.duration = 0;
     this.scale = 1;
+    this.tracksContainer = new TracksUI();
 
-    this.add(new TrackControlsUI());
-    this.add(this.container);
+    const tracksControls = new TrackControlsUI();
 
-    this.container.on('timeupdate', (e) => {
-      this.trigger('timeupdate', e);
+    tracksControls.durationInput.on('change', (e: ChangeEvent<InputElement>) => {
+      const duration = e.target?.dom.value;
+      if (duration) {
+        this.setDuration(parseFloat(duration));
+      }
     });
+
+    this.tracksContainer.on('timeupdate', (e) => this.trigger('timeupdate', e));
+
+    this.add(tracksControls);
+    this.add(this.tracksContainer);
 
     this.setScale(this.scale);
     this.setDuration(this.duration);
@@ -33,37 +36,21 @@ export default class TimeLineUI extends UIElement<{ timeupdate: { time: number }
 
   setScale(scale: number) {
     this.scale = scale;
-    this.tracks.forEach((t) => {
-      t.setScale(this.scale);
-    });
   }
 
   setDuration(n: number) {
     this.duration = n;
-
-    this.container.ruler.setDuration(n);
-    this.tracks.forEach((t) => {
-      t.setDuration(this.duration);
-    });
+    this.tracksContainer.setDuration(n);
   }
 
   registerTracks(tracks: KeyframeTrack[]): this {
     tracks.forEach((track) => {
-      let ui = new TrackUI(track.name, track.times, track.values);
-      ui.setDuration(this.duration);
-      ui.setScale(this.scale);
-      this.tracks.push(ui);
-      this.container.add(ui);
+      this.tracksContainer.fromTrack(track);
     });
-
     return this;
   }
 
   removeTracks(): this {
-    this.tracks.forEach((track) => {
-      this.container.remove(track);
-    });
-
     return this;
   }
 

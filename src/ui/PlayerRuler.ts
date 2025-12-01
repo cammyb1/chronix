@@ -1,8 +1,8 @@
-import UIElement from './UIElement';
+import { UIElement } from './BaseUI';
 
 export default class PlayerRuler extends UIElement<{ timeupdate: { time: number } }> {
   dragging: boolean = false;
-  duration: number = 0;
+  duration: number = 1;
 
   constructor() {
     super(document.createElement('div'));
@@ -18,7 +18,7 @@ export default class PlayerRuler extends UIElement<{ timeupdate: { time: number 
 
   setTime(time: number) {
     if (this.duration <= 0) return;
-    const percentage = (time / this.duration) * 80 + 20;
+    const percentage = (time / this.duration) * 100;
     this.dom.style.left = `${percentage}%`;
   }
 
@@ -40,13 +40,8 @@ export default class PlayerRuler extends UIElement<{ timeupdate: { time: number 
     const width = rect.width;
 
     let percentage = x / width;
-
-    // Limit to keyframe container area (20% to 100%)
-    percentage = Math.max(0.2, Math.min(1, percentage));
-
-    // Calculate time based on the 80% available width
-    const normalized = (percentage - 0.2) / 0.8;
-    const time = normalized * this.duration;
+    percentage = Math.max(0, Math.min(1, percentage));
+    const time = percentage * this.duration;
 
     this.trigger('timeupdate', { time });
     this.setTime(time);
