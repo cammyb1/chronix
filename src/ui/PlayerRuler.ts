@@ -48,8 +48,6 @@ export default class PlayerRuler extends TimeUIElement<{ timeupdate: { time: num
     const normalized = (percentage - 0.2) / 0.8;
     const time = normalized * this.duration;
 
-    console.log(time, normalized, this.duration);
-
     this.trigger('timeupdate', { time });
     this.setTime(time);
   };

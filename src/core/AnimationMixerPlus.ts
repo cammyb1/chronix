@@ -19,8 +19,8 @@ export class AnimationMixerPlus extends AnimationMixer {
   }
 
   override update(dt: number): this {
-    this.eventManager.update(dt);
     super.update(dt);
+    this.eventManager.update();
     return this;
   }
 

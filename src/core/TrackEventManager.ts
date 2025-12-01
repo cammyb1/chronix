@@ -30,13 +30,16 @@ export class TrackEventManager {
     }
   }
 
-  update(dt: number) {
+  update() {
     this.events.forEach((event) => {
       const frameTime = event.frame.time;
+      const lastTime = event.frame.lastTime;
       const time = event.action.time;
-      const futureTime = time + dt;
+      const dir = time - lastTime;
 
-      if (futureTime >= frameTime && event.frame.lastTime < frameTime) {
+      if (dir > 0 && lastTime < frameTime && frameTime <= time) {
+        this.trigger(event);
+      } else if (dir < 0 && lastTime > frameTime && frameTime >= time) {
         this.trigger(event);
       }
 

@@ -2,7 +2,9 @@ import { AnimationClip, type KeyframeTrack, type Object3D } from 'three';
 import { EventBus } from '../core/EventBus';
 import TimeLineUI from '../ui/TimeLineUI';
 
-export interface ATLEvents { timeupdate: { time: number } }
+export interface ATLEvents {
+  timeupdate: { time: number };
+}
 
 export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   ui: TimeLineUI;
@@ -42,6 +44,7 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
 
   resetDuration() {
     this.clip.resetDuration();
+    this.setDuration(this.clip.duration);
   }
 
   setDuration(dur: number): this {
@@ -69,9 +72,9 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   }
 
   fromArray(tracks: KeyframeTrack[]) {
-    this.clip.tracks = tracks;
-    this.resetDuration();
+    this.clip = new AnimationClip('test', -1, tracks);
     this.ui.removeTracks().registerTracks(this.clip.tracks);
+    this.resetDuration();
   }
 
   clear() {

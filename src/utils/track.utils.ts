@@ -34,7 +34,7 @@ export function generateEventTracks(tracks: FunctionKeyframeTrack[], action: Ani
         args: [],
         frame: {
           time: currentTime,
-          lastTime: 0,
+          lastTime: action.time,
         },
       };
 
