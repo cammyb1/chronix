@@ -1,7 +1,7 @@
 import PlayerRuler from './PlayerRuler';
-import TimeUIElement from './TimeUIElement';
+import UIElement from './UIElement';
 
-export default class TrackContainerUI extends TimeUIElement<{ timeupdate: { time: number } }> {
+export default class TrackContainerUI extends UIElement<{ timeupdate: { time: number } }> {
   ruler: PlayerRuler;
 
   constructor() {

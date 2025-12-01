@@ -1,5 +1,4 @@
 import {
-  AnimationClip,
   BoxGeometry,
   DirectionalLight,
   DirectionalLightHelper,
@@ -51,21 +50,37 @@ if (app) {
   const tracks = [
     new NumberKeyframeTrack('.rotation[x]', [0, 1, 2], [0, Math.PI, 0]),
     new NumberKeyframeTrack('.rotation[z]', [0, 1, 2], [0, Math.PI, 0]),
+    new NumberKeyframeTrack('.position[y]', [0, 1, 2], [0, 2, 0]),
     new FunctionKeyframeTrack(
-      'testing',
+      'testingFn',
       [0.75, 1.5, 2],
       ['cambiarColor:red', 'cambiarColor:blue', 'cambiarColor:white'],
     ),
   ];
+  let scale = 1;
+
+  window.addEventListener('wheel', (e) => {
+    const dir = Math.sign(e.deltaY * -0.01);
+    scale += 0.25 * dir;
+
+    if (scale > 5) {
+      scale = 5;
+    }
+    if (scale < 0.25) {
+      scale = 0.25;
+    }
+
+    mixer.timeScale = scale;
+    timeline.setTimeScale(mixer.timeScale);
+  });
+
   timeline.fromArray(tracks);
 
   const action = mixer.clipAction(timeline.clip);
   action.play();
 
-
   timeline.on('timeupdate', (e) => {
-    action.time = e.time;
-    mixer.update(0);
+    mixer.setTime(e.time);
   });
 
   webgl.camera.lookAt(box.position);

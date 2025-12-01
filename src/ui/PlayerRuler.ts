@@ -1,6 +1,6 @@
-import TimeUIElement from './TimeUIElement';
+import UIElement from './UIElement';
 
-export default class PlayerRuler extends TimeUIElement<{ timeupdate: { time: number } }> {
+export default class PlayerRuler extends UIElement<{ timeupdate: { time: number } }> {
   dragging: boolean = false;
   duration: number = 0;
 

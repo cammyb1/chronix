@@ -1,18 +1,18 @@
 import { EventBus } from "../core/EventBus";
 
-export default class TimeUIElement<ET extends {} = {}> extends EventBus<ET> {
+export default class UIElement<ET extends {} = {}> extends EventBus<ET> {
   dom: HTMLElement;
   constructor(dom: HTMLElement) {
     super();
     this.dom = dom;
   }
 
-  add(element: TimeUIElement<ET>): this {
+  add(element: UIElement<ET>): this {
     this.dom.appendChild(element.dom);
     return this;
   }
 
-  remove(element: TimeUIElement<ET>): this {
+  remove(element: UIElement<ET>): this {
     this.dom.removeChild(element.dom);
 
     return this;

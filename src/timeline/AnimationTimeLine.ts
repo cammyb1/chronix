@@ -13,6 +13,7 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
 
   running: boolean = false;
   time: number = 0;
+  timeScale: number = 1;
 
   constructor(ui: TimeLineUI = new TimeLineUI()) {
     super();
@@ -20,8 +21,8 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     this.ui = ui;
 
     this.ui.on('timeupdate', (e) => {
-      this.time = e.time;
-      this.trigger('timeupdate', e);
+      this.setTime(e.time);
+      this.trigger('timeupdate', { time: this.time });
     });
   }
 
@@ -31,6 +32,12 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     }
     this.ui = ui;
     this.ui.removeTracks().registerTracks(this.clip.tracks);
+  }
+
+  setTimeScale(v: number) {
+    this.timeScale = v;
+    this.ui.setScale(v);
+    this.resetDuration();
   }
 
   get dom(): HTMLElement {

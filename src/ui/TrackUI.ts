@@ -1,6 +1,6 @@
-import TimeUIElement from './TimeUIElement';
+import UIElement from './UIElement';
 
-export class PropertyUI extends TimeUIElement {
+export class PropertyUI extends UIElement {
   constructor(name: string) {
     super(document.createElement('div'));
 
@@ -9,14 +9,14 @@ export class PropertyUI extends TimeUIElement {
   }
 }
 
-export class KeyframeContainerUI extends TimeUIElement {
+export class KeyframeContainerUI extends UIElement {
   constructor() {
     super(document.createElement('div'));
     this.addClass('keyframe-container');
   }
 }
 
-export class KeyframeUI extends TimeUIElement {
+export class KeyframeUI extends UIElement {
   value: number;
   constructor(value: number, duration: number) {
     super(document.createElement('div'));
@@ -26,30 +26,32 @@ export class KeyframeUI extends TimeUIElement {
     this.updatePosition(value, duration);
   }
 
-  updatePosition(value: number, duration: number) {
-    const pos = (value / duration) * 100;
+  updatePosition(value: number, duration: number, scale: number = 1) {
+    const pos =(value / duration) * scale * 100;
 
     this.dom.style.left = `calc(${pos}% - 3px)`;
   }
 }
 
-export default class TrackUI extends TimeUIElement {
+export default class TrackUI extends UIElement {
   keyContainer: KeyframeContainerUI;
   keyframes: KeyframeUI[];
   duration: number;
+  scale: number;
   times: ArrayLike<number>;
   values: ArrayLike<number>;
 
-  constructor(name: string, times: ArrayLike<number>, values: ArrayLike<number>, duration: number) {
+  constructor(name: string, times: ArrayLike<number>, values: ArrayLike<number>) {
     super(document.createElement('div'));
 
     this.addClass('track-item');
 
     this.keyContainer = new KeyframeContainerUI();
     this.keyframes = [];
-    this.duration = duration;
+    this.duration = 0;
     this.times = times;
     this.values = values;
+    this.scale = 1;
 
     this.add(new PropertyUI(name));
     this.add(this.keyContainer);
@@ -57,12 +59,21 @@ export default class TrackUI extends TimeUIElement {
     this.generateFrames(times);
   }
 
-  updateDuration(t: number) {
-    this.duration = t;
-
+  updateKeyframes() {
+    console.log(this.scale)
     this.keyframes.forEach((k) => {
-      k.updatePosition(k.value, this.duration);
+      k.updatePosition(k.value, this.duration, this.scale);
     });
+  }
+
+  setDuration(t: number) {
+    this.duration = t;
+    this.updateKeyframes();
+  }
+
+  setScale(scale: number) {
+    this.scale = scale;
+    this.updateKeyframes();
   }
 
   generateFrames(times: ArrayLike<number>) {

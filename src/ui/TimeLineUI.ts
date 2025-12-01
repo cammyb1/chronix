@@ -1,12 +1,13 @@
 import type { KeyframeTrack } from 'three';
-import TimeUIElement from './TimeUIElement';
+import UIElement from './UIElement';
 import TrackUI from './TrackUI';
 import TrackControlsUI from './TrackControlsUI';
 import TrackContainerUI from './TrackContainerUI';
 
-export default class TimeLineUI extends TimeUIElement<{ timeupdate: { time: number } }> {
+export default class TimeLineUI extends UIElement<{ timeupdate: { time: number } }> {
   tracks: TrackUI[] = [];
   duration: number;
+  scale: number;
   container: TrackContainerUI;
 
   constructor() {
@@ -17,12 +18,23 @@ export default class TimeLineUI extends TimeUIElement<{ timeupdate: { time: numb
     this.container = new TrackContainerUI();
 
     this.duration = 0;
+    this.scale = 1;
 
     this.add(new TrackControlsUI());
     this.add(this.container);
 
     this.container.on('timeupdate', (e) => {
       this.trigger('timeupdate', e);
+    });
+
+    this.setScale(this.scale);
+    this.setDuration(this.duration);
+  }
+
+  setScale(scale: number) {
+    this.scale = scale;
+    this.tracks.forEach((t) => {
+      t.setScale(this.scale);
     });
   }
 
@@ -31,13 +43,15 @@ export default class TimeLineUI extends TimeUIElement<{ timeupdate: { time: numb
 
     this.container.ruler.setDuration(n);
     this.tracks.forEach((t) => {
-      t.updateDuration(this.duration);
+      t.setDuration(this.duration);
     });
   }
 
   registerTracks(tracks: KeyframeTrack[]): this {
     tracks.forEach((track) => {
-      let ui = new TrackUI(track.name, track.times, track.values, this.duration);
+      let ui = new TrackUI(track.name, track.times, track.values);
+      ui.setDuration(this.duration);
+      ui.setScale(this.scale);
       this.tracks.push(ui);
       this.container.add(ui);
     });
