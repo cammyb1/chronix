@@ -1,11 +1,14 @@
 import type { KeyframeTrack } from 'three';
-import PlayerRuler from './PlayerRuler';
+import PlayerRuler, { RulerTime } from './PlayerRuler';
 import { UIElement } from './BaseUI';
 import { ButtonElement, DivElement, InputElement } from './BaseUI';
 
 export class TrackControlsUI extends DivElement {
   nameInput: InputElement;
   durationInput: InputElement;
+  onPlay: () => void = () => {};
+  onPause: () => void = () => {};
+  onStop: () => void = () => {};
 
   constructor() {
     super();
@@ -20,9 +23,17 @@ export class TrackControlsUI extends DivElement {
     this.durationInput.dom.value = '0.0';
     this.durationInput.dom.step = '0.1';
 
-    this.add(new ButtonElement().addClass(['track-button', 'icon-play']));
-    this.add(new ButtonElement().addClass(['track-button', 'icon-pause']));
-    this.add(new ButtonElement().addClass(['track-button', 'icon-stop']));
+    const play = new ButtonElement().addClass(['track-button', 'icon-play']);
+    const pause = new ButtonElement().addClass(['track-button', 'icon-pause']);
+    const stop = new ButtonElement().addClass(['track-button', 'icon-stop']);
+
+    play.on('click', () => this.onPlay());
+    pause.on('click', () => this.onPause());
+    stop.on('click', () => this.onStop());
+
+    this.add(play);
+    this.add(pause);
+    this.add(stop);
     this.add(this.nameInput);
     this.add(this.durationInput);
   }
@@ -93,14 +104,6 @@ export class KeyframeUI extends DivElement {
   }
 }
 
-export class RulerTime extends DivElement {
-  constructor() {
-    super();
-
-    this.addClass('track-ruler');
-  }
-}
-
 export class TracksUI extends DivElement<{ timeupdate: { time: number } }> {
   propertyContainer: TrackPropertyContainer;
   timeContainer: TrackTimeContainer;
@@ -133,6 +136,10 @@ export class TracksUI extends DivElement<{ timeupdate: { time: number } }> {
 
     this.refreshTracks();
     this.timeContainer.ruler.setDuration(v);
+  }
+
+  setTime(time: number) {
+    this.timeContainer.ruler.setTime(time);
   }
 
   refreshTracks() {

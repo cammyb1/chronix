@@ -11,6 +11,7 @@ import { mount } from './three';
 import './css/styles.css';
 import { AnimationTimeLine } from './timeline/AnimationTimeLine';
 import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
+import { Time } from './core/Time';
 
 const app = document.getElementById('app') as HTMLElement;
 
@@ -56,6 +57,8 @@ if (app) {
   ];
 
   timeline.fromArray(tracks);
+
+  Time.on('loop', () => timeline.update(Time.delta));
 
   webgl.camera.lookAt(box.position);
   webgl.camera.position.set(-2, 2, 15);

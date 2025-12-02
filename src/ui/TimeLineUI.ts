@@ -1,14 +1,22 @@
 import type { KeyframeTrack } from 'three';
-import { InputElement, UIElement, type ChangeEvent } from './BaseUI';
+import { DivElement, InputElement, type ChangeEvent } from './BaseUI';
 import { TrackControlsUI, TracksUI } from './TrackUI';
 
-export default class TimeLineUI extends UIElement<{ timeupdate: { time: number } }> {
+export interface TimeLineEvents {
+  timeupdate: { time: number };
+  play: null;
+  pause: null;
+  stop: null;
+}
+
+export default class TimeLineUI extends DivElement<TimeLineEvents> {
   tracksContainer: TracksUI;
+  tracksControls: TrackControlsUI;
   duration: number;
   scale: number;
 
   constructor() {
-    super(document.createElement('div'));
+    super();
 
     this.addClass('timeline-container');
 
@@ -16,18 +24,22 @@ export default class TimeLineUI extends UIElement<{ timeupdate: { time: number }
     this.scale = 1;
     this.tracksContainer = new TracksUI();
 
-    const tracksControls = new TrackControlsUI();
+    this.tracksControls = new TrackControlsUI();
 
-    tracksControls.durationInput.on('change', (e: ChangeEvent<InputElement>) => {
+    this.tracksControls.durationInput.on('change', (e: ChangeEvent<InputElement>) => {
       const duration = e.target?.dom.value;
       if (duration) {
         this.setDuration(parseFloat(duration));
       }
     });
 
+    this.tracksControls.onPlay = () => this.trigger('play');
+    this.tracksControls.onPause = () => this.trigger('pause');
+    this.tracksControls.onStop = () => this.trigger('stop');
+
     this.tracksContainer.on('timeupdate', (e) => this.trigger('timeupdate', e));
 
-    this.add(tracksControls);
+    this.add(this.tracksControls);
     this.add(this.tracksContainer);
 
     this.setScale(this.scale);
@@ -41,6 +53,11 @@ export default class TimeLineUI extends UIElement<{ timeupdate: { time: number }
   setDuration(n: number) {
     this.duration = n;
     this.tracksContainer.setDuration(n);
+    this.tracksControls.durationInput.dom.value = n.toString();
+  }
+
+  setTime(t: number) {
+    this.tracksContainer.setTime(t);
   }
 
   registerTracks(tracks: KeyframeTrack[]): this {
@@ -53,6 +70,4 @@ export default class TimeLineUI extends UIElement<{ timeupdate: { time: number }
   removeTracks(): this {
     return this;
   }
-
-  update() {}
 }

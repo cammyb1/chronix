@@ -1,11 +1,11 @@
-import { UIElement } from './BaseUI';
+import { DivElement } from './BaseUI';
 
-export default class PlayerRuler extends UIElement<{ timeupdate: { time: number } }> {
+export default class PlayerRuler extends DivElement<{ timeupdate: { time: number } }> {
   dragging: boolean = false;
   duration: number = 1;
 
   constructor() {
-    super(document.createElement('div'));
+    super();
 
     this.addClass('player-ruler');
 
@@ -52,4 +52,12 @@ export default class PlayerRuler extends UIElement<{ timeupdate: { time: number 
     window.removeEventListener('mousemove', this.onMouseMove);
     window.removeEventListener('mouseup', this.onMouseUp);
   };
+}
+
+export class RulerTime extends DivElement {
+  constructor() {
+    super();
+
+    this.addClass('track-ruler');
+  }
 }

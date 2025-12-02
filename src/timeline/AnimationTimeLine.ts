@@ -15,7 +15,6 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
 
   private _action: AnimationAction;
 
-  private time: number = 0;
   private timeScale: number = 1;
   private running: boolean = false;
 
@@ -32,6 +31,10 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     this.ui.on('timeupdate', (e) => {
       this.setTime(e.time);
     });
+
+    this.ui.on('play', () => this.start());
+    this.ui.on('pause', () => this.pause());
+    this.ui.on('stop', () => this.stop());
   }
 
   attachUI(ui: TimeLineUI) {
@@ -73,24 +76,6 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     return this;
   }
 
-  forward(time: number): this {
-    this.time += time;
-    if (this.time > this.clip.duration) {
-      this.time = this.clip.duration;
-    }
-
-    return this;
-  }
-
-  backward(time: number): this {
-    this.time -= time;
-    if (this.time < 0) {
-      this.time = 0;
-    }
-
-    return this;
-  }
-
   fromArray(tracks: KeyframeTrack[]) {
     if (this._action) {
       this._action.stop();
@@ -107,7 +92,6 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
 
   clear() {
     this.clip.tracks = [];
-    this.time = 0;
   }
 
   start(): this {
@@ -115,14 +99,25 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     return this;
   }
 
+  pause(): this {
+    this.running = false;
+    return this;
+  }
+
+  update(dt: number) {
+    if (!this.running) return;
+    this.mixer.update(dt);
+    this.ui.setTime(this._action.time);
+  }
+
   stop(): this {
-    this.time = 0;
+    this.setTime(0);
     this.running = false;
     return this;
   }
 
   setTime(t: number) {
-    this.time = t;
     this.mixer.setTime(t);
+    this.ui.setTime(t);
   }
 }
