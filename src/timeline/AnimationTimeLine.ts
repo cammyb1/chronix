@@ -21,13 +21,26 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   constructor(r?: T, ui?: TimeLineUI) {
     super();
     this.clip = new AnimationClip('test', -1, []);
-    this.ui = ui || new TimeLineUI();
     this.root = r || (new Object3D() as T);
-
     this.mixer = new AnimationMixerPlus(this.root);
     this._action = this.mixer.clipAction(this.clip);
     this._action.play();
 
+    this.ui = ui || new TimeLineUI();
+    this._bindUIListeners();
+    this.ui.removeTracks().registerTracks(this.clip.tracks);
+  }
+
+  attachUI(ui: TimeLineUI) {
+    if (this.ui?.dom.parentNode) {
+      this.ui.dom.parentNode.removeChild(this.ui.dom);
+    }
+    this.ui = ui;
+    this._bindUIListeners();
+    this.ui.removeTracks().registerTracks(this.clip.tracks);
+  }
+
+  private _bindUIListeners() {
     this.ui.on('timeupdate', (e) => {
       this.setTime(e.time);
     });
@@ -38,14 +51,6 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     this.ui.on('play', () => this.start());
     this.ui.on('pause', () => this.pause());
     this.ui.on('stop', () => this.stop());
-  }
-
-  attachUI(ui: TimeLineUI) {
-    if (this.ui.dom.parentNode) {
-      this.ui.dom.parentNode.removeChild(this.ui.dom);
-    }
-    this.ui = ui;
-    this.ui.removeTracks().registerTracks(this.clip.tracks);
   }
 
   setTimeScale(v: number) {
