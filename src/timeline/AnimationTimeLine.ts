@@ -31,6 +31,9 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     this.ui.on('timeupdate', (e) => {
       this.setTime(e.time);
     });
+    this.ui.on('durationChange', (e) => {
+      this.setDuration(e.duration);
+    });
 
     this.ui.on('play', () => this.start());
     this.ui.on('pause', () => this.pause());
@@ -72,6 +75,9 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
 
   setDuration(dur: number): this {
     this.clip.duration = dur;
+    if (this._action) {
+      this._action.setDuration(dur);
+    }
     this.ui.setDuration(dur);
     return this;
   }

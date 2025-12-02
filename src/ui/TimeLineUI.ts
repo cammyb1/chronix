@@ -4,6 +4,7 @@ import { TrackControlsUI, TracksUI } from './TrackUI';
 
 export interface TimeLineEvents {
   timeupdate: { time: number };
+  durationChange: { duration: number };
   play: null;
   pause: null;
   stop: null;
@@ -29,7 +30,9 @@ export default class TimeLineUI extends DivElement<TimeLineEvents> {
     this.tracksControls.durationInput.on('change', (e: ChangeEvent<InputElement>) => {
       const duration = e.target?.dom.value;
       if (duration) {
-        this.setDuration(parseFloat(duration));
+        const parsedDuration = parseFloat(duration);
+        this.setDuration(parsedDuration);
+        this.trigger('durationChange', { duration: parsedDuration });
       }
     });
 
