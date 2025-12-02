@@ -1,6 +1,6 @@
 import type { KeyframeTrack } from 'three';
 import { DivElement, InputElement, type ChangeEvent } from './BaseUI';
-import { TrackControlsUI, TracksUI } from './TrackUI';
+import { TrackControlsUI, TrackSubheaderUI, TracksUI } from './TrackUI';
 
 export interface TimeLineEvents {
   timeupdate: { time: number };
@@ -13,6 +13,7 @@ export interface TimeLineEvents {
 export default class TimeLineUI extends DivElement<TimeLineEvents> {
   tracksContainer: TracksUI;
   tracksControls: TrackControlsUI;
+  trackSubHeader: TrackSubheaderUI;
   duration: number;
   scale: number;
 
@@ -24,7 +25,7 @@ export default class TimeLineUI extends DivElement<TimeLineEvents> {
     this.duration = 0;
     this.scale = 1;
     this.tracksContainer = new TracksUI();
-
+    this.trackSubHeader = new TrackSubheaderUI();
     this.tracksControls = new TrackControlsUI();
 
     this.tracksControls.durationInput.on('change', (e: ChangeEvent<InputElement>) => {
@@ -40,9 +41,10 @@ export default class TimeLineUI extends DivElement<TimeLineEvents> {
     this.tracksControls.onPause = () => this.trigger('pause');
     this.tracksControls.onStop = () => this.trigger('stop');
 
-    this.tracksContainer.on('timeupdate', (e) => this.trigger('timeupdate', e));
+    this.trackSubHeader.on('timeupdate', (e) => this.trigger('timeupdate', e));
 
     this.add(this.tracksControls);
+    this.add(this.trackSubHeader);
     this.add(this.tracksContainer);
 
     this.setScale(this.scale);
@@ -56,11 +58,12 @@ export default class TimeLineUI extends DivElement<TimeLineEvents> {
   setDuration(n: number) {
     this.duration = n;
     this.tracksContainer.setDuration(n);
+    this.trackSubHeader.setDuration(n);
     this.tracksControls.durationInput.dom.value = n.toString();
   }
 
   setTime(t: number) {
-    this.tracksContainer.setTime(t);
+    this.trackSubHeader.setTime(t);
   }
 
   registerTracks(tracks: KeyframeTrack[]): this {

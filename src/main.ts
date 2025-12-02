@@ -1,4 +1,5 @@
 import {
+  BooleanKeyframeTrack,
   BoxGeometry,
   DirectionalLight,
   DirectionalLightHelper,
@@ -47,8 +48,10 @@ if (app) {
 
   const tracks = [
     new NumberKeyframeTrack('.rotation[x]', [0, 1, 2], [0, Math.PI, 0]),
-    new NumberKeyframeTrack('.rotation[z]', [0, 1, 2], [0, Math.PI, 0]),
     new NumberKeyframeTrack('.position[y]', [0, 1, 2], [0, 2, 0]),
+    new NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0.25, 1]),
+    new BooleanKeyframeTrack('.material.transparent', [0,1, 2], [true, true, true]),
+    new BooleanKeyframeTrack('.material.transparent', [0,1, 2], [true, true, true]),
     new FunctionKeyframeTrack(
       'testingFn',
       [0.75, 1.5, 2],

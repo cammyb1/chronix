@@ -1,5 +1,5 @@
 import type { KeyframeTrack } from 'three';
-import PlayerRuler, { RulerTime } from './PlayerRuler';
+import PlayerRuler, { RulerTime, type RulerEvent } from './PlayerRuler';
 import { UIElement } from './BaseUI';
 import { ButtonElement, DivElement, InputElement } from './BaseUI';
 
@@ -39,6 +39,34 @@ export class TrackControlsUI extends DivElement {
   }
 }
 
+export class TrackSubheaderUI extends DivElement<RulerEvent> {
+  ruler: PlayerRuler;
+  constructor() {
+    super();
+
+    this.addClass('track-sub-header');
+
+    const side = new DivElement().addClass('track-side-container').add(new AddTrackButton());
+    const timeline = new DivElement().addClass('track-time-container');
+    this.ruler = new PlayerRuler();
+    timeline.add(new RulerTime());
+    timeline.add(this.ruler);
+
+    this.ruler.on('timeupdate', (e) => this.trigger('timeupdate', e));
+
+    this.add(side);
+    this.add(timeline);
+  }
+
+  setTime(t: number) {
+    this.ruler.setTime(t);
+  }
+
+  setDuration(d: number) {
+    this.ruler.setDuration(d);
+  }
+}
+
 export class AddTrackButton extends DivElement {
   constructor() {
     super();
@@ -61,18 +89,13 @@ export class TrackPropertyContainer extends DivElement {
   constructor() {
     super();
 
-    this.addClass('track-property-container');
-    this.add(new AddTrackButton());
+    this.addClass('track-side-container');
   }
 }
 
 export class TrackTimeContainer extends DivElement {
-  ruler: PlayerRuler;
   constructor() {
     super();
-
-    this.ruler = new PlayerRuler();
-    this.add(this.ruler);
     this.addClass('track-time-container');
   }
 }
@@ -104,7 +127,7 @@ export class KeyframeUI extends DivElement {
   }
 }
 
-export class TracksUI extends DivElement<{ timeupdate: { time: number } }> {
+export class TracksUI extends DivElement {
   propertyContainer: TrackPropertyContainer;
   timeContainer: TrackTimeContainer;
 
@@ -116,30 +139,19 @@ export class TracksUI extends DivElement<{ timeupdate: { time: number } }> {
 
     this.propertyContainer = new TrackPropertyContainer();
     this.timeContainer = new TrackTimeContainer();
+
     this.add(this.propertyContainer);
     this.add(this.timeContainer);
 
     this.duration = 0;
     this.tracks = [];
 
-    this.timeContainer.add(new RulerTime());
-
     this.addClass('track-body');
-
-    this.timeContainer.ruler.on('timeupdate', (event) => {
-      this.trigger('timeupdate', event);
-    });
   }
 
   setDuration(v: number) {
     this.duration = v;
-
     this.refreshTracks();
-    this.timeContainer.ruler.setDuration(v);
-  }
-
-  setTime(time: number) {
-    this.timeContainer.ruler.setTime(time);
   }
 
   refreshTracks() {
