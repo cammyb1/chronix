@@ -13,6 +13,7 @@ import './css/styles.css';
 import { AnimationTimeLine } from './timeline/AnimationTimeLine';
 import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
 import { Time } from './core/Time';
+import TimeLineUI from './ui/TimeLineUI';
 
 const app = document.getElementById('app') as HTMLElement;
 
@@ -42,16 +43,14 @@ if (app) {
 
   const timeline = new AnimationTimeLine(box);
 
-  document.body.appendChild(timeline.dom);
-
   webgl.scene.add(new DirectionalLightHelper(light));
 
   const tracks = [
     new NumberKeyframeTrack('.rotation[x]', [0, 1, 2], [0, Math.PI, 0]),
     new NumberKeyframeTrack('.position[y]', [0, 1, 2], [0, 2, 0]),
     new NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0.25, 1]),
-    new BooleanKeyframeTrack('.material.transparent', [0,1, 2], [true, true, true]),
-    new BooleanKeyframeTrack('.material.transparent', [0,1, 2], [true, true, true]),
+    new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+    new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
     new FunctionKeyframeTrack(
       'testingFn',
       [0.75, 1.5, 2],
@@ -60,6 +59,9 @@ if (app) {
   ];
 
   timeline.fromArray(tracks);
+
+  const timeUI = new TimeLineUI().setParent(timeline);
+  document.body.appendChild(timeUI.dom);
 
   Time.on('loop', () => timeline.update(Time.delta));
 

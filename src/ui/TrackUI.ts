@@ -1,11 +1,16 @@
 import type { KeyframeTrack } from 'three';
 import PlayerRuler, { RulerTime, type RulerEvent } from './PlayerRuler';
-import { UIElement } from './BaseUI';
+import { UIElement, type ChangeEvent } from './BaseUI';
 import { ButtonElement, DivElement, InputElement } from './BaseUI';
 
-export class TrackControlsUI extends DivElement {
-  nameInput: InputElement;
-  durationInput: InputElement;
+export interface TrackControlEvents {
+  updateDuration: { value: number };
+  updateName: { value: string };
+}
+
+export class TrackControlsUI extends DivElement<TrackControlEvents> {
+  name: InputElement;
+  duration: InputElement;
   onPlay: () => void = () => {};
   onPause: () => void = () => {};
   onStop: () => void = () => {};
@@ -14,14 +19,14 @@ export class TrackControlsUI extends DivElement {
     super();
     this.addClass('track-controls');
 
-    this.nameInput = new InputElement('text').addClass('track-input');
-    this.durationInput = new InputElement('number').addClass('track-input');
+    this.name = new InputElement('text').addClass('track-input');
+    this.duration = new InputElement('number').addClass('track-input');
 
-    this.nameInput.dom.value = 'Test';
+    this.name.dom.value = 'Test';
 
-    this.durationInput.dom.min = '0';
-    this.durationInput.dom.value = '0.0';
-    this.durationInput.dom.step = '0.1';
+    this.duration.dom.min = '0';
+    this.duration.dom.value = '0.0';
+    this.duration.dom.step = '0.1';
 
     const play = new ButtonElement().addClass(['track-button', 'icon-play']);
     const pause = new ButtonElement().addClass(['track-button', 'icon-pause']);
@@ -34,8 +39,28 @@ export class TrackControlsUI extends DivElement {
     this.add(play);
     this.add(pause);
     this.add(stop);
-    this.add(this.nameInput);
-    this.add(this.durationInput);
+    this.add(this.name);
+    this.add(this.duration);
+
+    this.name.on('change', (e: ChangeEvent<InputElement>) => {
+      if (e.target?.dom.value) {
+        this.trigger('updateName', { value: e.target.dom.value });
+      }
+    });
+
+    this.duration.on('change', (e: ChangeEvent<InputElement>) => {
+      if (e.target?.dom.value) {
+        this.trigger('updateDuration', { value: parseFloat(e.target.dom.value) });
+      }
+    });
+  }
+
+  setDurationValue(value: number) {
+    this.duration.dom.value = value.toString();
+  }
+
+  setNameValue(value: string) {
+    this.name.dom.value = value;
   }
 }
 
@@ -123,7 +148,7 @@ export class KeyframeUI extends DivElement {
     if (duration <= 0) return;
     const pos = (value / duration) * scale * 100;
 
-    this.dom.style.left = `calc(${pos}% - 3px)`;
+    this.dom.style.left = `calc(${pos}% - 1.5px)`;
   }
 }
 
@@ -152,6 +177,12 @@ export class TracksUI extends DivElement {
   setDuration(v: number) {
     this.duration = v;
     this.refreshTracks();
+  }
+
+  override clear(): this {
+    this.propertyContainer.clear();
+    this.timeContainer.clear();
+    return this;
   }
 
   refreshTracks() {

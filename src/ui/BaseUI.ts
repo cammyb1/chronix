@@ -10,12 +10,12 @@ export class UIElement<
     this.dom = dom;
   }
 
-  add(element: UIElement<Events>): this {
+  add(element: UIElement): this {
     this.dom.appendChild(element.dom);
     return this;
   }
 
-  remove(element: UIElement<Events>): this {
+  remove(element: UIElement): this {
     this.dom.removeChild(element.dom);
 
     return this;
