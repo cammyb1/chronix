@@ -94,6 +94,10 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     this.trigger('timeupdate', { time: this.mixer.time });
   }
 
+  getActionTime(): number {
+    return this._action.time;
+  }
+
   getTime(): number {
     return this.mixer.time;
   }

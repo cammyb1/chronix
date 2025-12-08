@@ -79,8 +79,10 @@ export default class TimeLineUI<T extends Object3D> extends DivElement<TimeLineE
         this.setDuration(this.parent.getDuration());
       }
 
-      this.parent.on('timeupdate', ({ time }) => {
-        this.trackSubHeader.setTime(time);
+      this.parent.on('timeupdate', () => {
+        if (this.parent) {
+          this.trackSubHeader.setTime(this.parent.getActionTime());
+        }
       });
 
       this.parent.on('updateProps', () => {
