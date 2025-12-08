@@ -6,14 +6,14 @@ import { ButtonElement, DivElement, InputElement } from './BaseUI';
 export interface TrackControlEvents {
   updateDuration: { value: number };
   updateName: { value: string };
+  play: null;
+  pause: null;
+  stop: null;
 }
 
 export class TrackControlsUI extends DivElement<TrackControlEvents> {
   name: InputElement;
   duration: InputElement;
-  onPlay: () => void = () => {};
-  onPause: () => void = () => {};
-  onStop: () => void = () => {};
 
   constructor() {
     super();
@@ -32,9 +32,9 @@ export class TrackControlsUI extends DivElement<TrackControlEvents> {
     const pause = new ButtonElement().addClass(['track-button', 'icon-pause']);
     const stop = new ButtonElement().addClass(['track-button', 'icon-stop']);
 
-    play.on('click', () => this.onPlay());
-    pause.on('click', () => this.onPause());
-    stop.on('click', () => this.onStop());
+    play.on('click', () => this.trigger('play'));
+    pause.on('click', () => this.trigger('pause'));
+    stop.on('click', () => this.trigger('stop'));
 
     this.add(play);
     this.add(pause);

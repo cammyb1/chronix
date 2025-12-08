@@ -78,7 +78,7 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     this.clip.tracks = [];
   }
 
-  start(): this {
+  play(): this {
     this.running = true;
     return this;
   }
@@ -91,6 +91,7 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   update(dt: number) {
     if (!this.running) return;
     this.mixer.update(dt);
+    this.trigger('timeupdate', { time: this.mixer.time });
   }
 
   getTime(): number {
@@ -105,5 +106,6 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
 
   setTime(t: number) {
     this.mixer.setTime(t);
+    this.trigger('timeupdate', { time: this.mixer.time });
   }
 }

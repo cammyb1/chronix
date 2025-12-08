@@ -1,5 +1,5 @@
 import type { KeyframeTrack, Object3D } from 'three';
-import { DivElement, InputElement, type ChangeEvent } from './BaseUI';
+import { DivElement } from './BaseUI';
 import { TrackControlsUI, TrackSubheaderUI, TracksUI } from './TrackUI';
 import { AnimationTimeLine } from '../timeline/AnimationTimeLine';
 
@@ -28,11 +28,25 @@ export default class TimeLineUI<T extends Object3D> extends DivElement<TimeLineE
     this.trackSubHeader = new TrackSubheaderUI();
     this.tracksControls = new TrackControlsUI();
 
-    this.tracksControls.duration.on('change', (e: ChangeEvent<InputElement>) => {
-      const duration = e.target?.dom.value;
-      if (duration) {
-        const parsedDuration = parseFloat(duration);
-        this.setDuration(parsedDuration);
+    this.tracksControls.on('updateDuration', (e: { value: number }) => {
+      this.setDuration(e.value);
+    });
+
+    this.tracksControls.on('play', () => {
+      if (this.parent) {
+        this.parent.play();
+      }
+    });
+
+    this.tracksControls.on('pause', () => {
+      if (this.parent) {
+        this.parent.pause();
+      }
+    });
+
+    this.tracksControls.on('stop', () => {
+      if (this.parent) {
+        this.parent.stop();
       }
     });
 
@@ -54,12 +68,21 @@ export default class TimeLineUI<T extends Object3D> extends DivElement<TimeLineE
     return this;
   }
 
+  getControls(): TrackControlsUI {
+    return this.tracksControls;
+  }
+
   private _bindParent() {
     if (this.parent) {
       if (this.parent.getTracks().length > 0) {
         this.removeTracks().registerTracks(this.parent.getTracks());
         this.setDuration(this.parent.getDuration());
       }
+
+      this.parent.on('timeupdate', ({ time }) => {
+        this.trackSubHeader.setTime(time);
+      });
+
       this.parent.on('updateProps', () => {
         if (!this.parent) return;
         this.removeTracks().registerTracks(this.parent.getTracks());
