@@ -66,6 +66,7 @@ export class TrackControlsUI extends DivElement<TrackControlEvents> {
 
 export class TrackSubheaderUI extends DivElement<RulerEvent> {
   ruler: PlayerRuler;
+  rulerTime: RulerTime;
   constructor() {
     super();
 
@@ -74,8 +75,12 @@ export class TrackSubheaderUI extends DivElement<RulerEvent> {
     const side = new DivElement().addClass('track-side-container').add(new AddTrackButton());
     const timeline = new DivElement().addClass('track-time-container');
     this.ruler = new PlayerRuler();
-    timeline.add(new RulerTime());
-    timeline.add(this.ruler);
+    this.rulerTime = new RulerTime();
+    const wrapper = new DivElement().addClass('track-inner-wrapper');
+    wrapper.add(this.rulerTime);
+    wrapper.add(this.ruler);
+    
+    timeline.add(wrapper);
 
     this.ruler.on('timeupdate', (e) => this.trigger('timeupdate', e));
 
@@ -89,6 +94,7 @@ export class TrackSubheaderUI extends DivElement<RulerEvent> {
 
   setDuration(d: number) {
     this.ruler.setDuration(d);
+    (this.rulerTime as RulerTime).setDuration(d);
   }
 }
 
@@ -98,10 +104,6 @@ export class AddTrackButton extends DivElement {
     const button = new ButtonElement().addClass(['track-button', 'icon-plus']);
     const label = new UIElement(document.createElement('span'));
 
-    button.dom.style.background = 'transparent';
-    button.dom.style.border = 'none';
-
-    label.dom.style.fontFamily = 'calibri';
     label.setHTML('Add keyframe');
 
     this.add(button);
@@ -148,7 +150,7 @@ export class KeyframeUI extends DivElement {
     if (duration <= 0) return;
     const pos = (value / duration) * scale * 100;
 
-    this.dom.style.left = `calc(${pos}% - 1.5px)`;
+    this.dom.style.left = `calc(${pos}% - 5px)`;
   }
 }
 
@@ -196,13 +198,15 @@ export class TracksUI extends DivElement {
     this.propertyContainer.add(kProperty);
 
     const kcontainer = new DivElement().addClass('keyframe-container');
+    const wrapper = new DivElement().addClass('track-inner-wrapper');
 
     track.times.forEach((t) => {
       const kFrames = new KeyframeUI(t, this.duration);
       this.tracks.push({ name: kProperty, frame: kFrames });
-      kcontainer.add(kFrames);
+      wrapper.add(kFrames);
     });
 
+    kcontainer.add(wrapper);
     this.timeContainer.add(kcontainer);
   }
 }
