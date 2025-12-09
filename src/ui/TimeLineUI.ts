@@ -30,6 +30,10 @@ export default class TimeLineUI<T extends Object3D> extends DivElement<TimeLineE
 
     this.tracksControls.on('updateDuration', (e: { value: number }) => {
       this.setDuration(e.value);
+
+      if (this.parent && this.parent.getDuration() !== e.value) {
+        this.setDuration(this.parent.getDuration());
+      }
     });
 
     this.tracksControls.on('play', () => {

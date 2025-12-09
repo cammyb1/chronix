@@ -7,13 +7,13 @@
   --bg-panel: #f3f3f3;
   --bg-header: #e0e0e0;
   --bg-hover: #e8e8e8;
-  
-  --accent-color: #007acc;
-  --accent-hover: #0098ff;
-  
+
+  --accent-color: #6c6db1;
+  --accent-hover: #5557b6;
+
   --text-main: #333333;
   --text-muted: #666666;
-  
+
   --border-color: #d4d4d4;
   --border-light: #e5e5e5;
 
@@ -23,7 +23,7 @@
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
-  
+
   /* Shadow */
   --shadow-elevation: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
 }
@@ -84,12 +84,17 @@ body {
 .track-body {
   width: 100%;
   flex: 1;
-  display: flex;
-  flex-direction: row;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-color: var(--border-light) transparent;
   scrollbar-width: thin;
+}
+
+.track-scroll-content {
+  display: flex;
+  flex-direction: row;
+  min-height: 100%;
+  width: 100%;
 }
 
 /* Scrollbar styling for Webkit */
@@ -109,10 +114,9 @@ body {
 
 .track-side-container {
   width: 250px;
-  height: 100%;
+  min-height: 100%;
   background: var(--bg-panel);
   border-right: 1px solid var(--border-color);
-  flex-shrink: 0;
 }
 
 .track-addTrack {
@@ -134,11 +138,8 @@ body {
 }
 
 .track-time-container {
-  flex: 1;
-  height: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
+  width: calc(100% - 250px);
+  min-height: 100%;
   background: var(--bg-dark);
 }
 
@@ -172,8 +173,15 @@ body {
 .track-ruler {
   width: 100%;
   height: 100%;
+  min-height: 32px;
   position: relative;
   background: transparent;
+}
+
+.ruler-tick-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 .ruler-tick {
@@ -185,10 +193,10 @@ body {
 }
 
 .ruler-tick.minor {
-  height: 100%;
+  height: 50%;
   top: auto; /* dock to bottom */
   bottom: 0;
-  border-left-color:  var(--border-light);
+  border-left-color: var(--border-light);
 }
 
 .ruler-tick.major {
@@ -247,7 +255,7 @@ body {
   width: 14px;
   height: 14px; /* Fixed height for the handle */
   background: var(--accent-color);
-  
+
   /* Make it a triangle pointing down */
   clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
 }
@@ -258,7 +266,7 @@ body {
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(0, 0, 0, 0.02); /* Slight darken for light theme contrast */
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .keyframe {
@@ -274,7 +282,8 @@ body {
   transition: transform 0.1s;
 }
 
-.keyframe.selected, .keyframe:hover {
+.keyframe.selected,
+.keyframe:hover {
   background: var(--accent-color);
   transform: scale(1.4);
   z-index: 5;
@@ -291,4 +300,5 @@ body {
   align-items: center;
   height: 36px;
   border-bottom: 1px solid var(--border-color);
+  background: rgba(0, 0, 0, 0.04);
 }

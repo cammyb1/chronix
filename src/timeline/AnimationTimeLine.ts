@@ -12,8 +12,7 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   protected clip: AnimationClip;
   protected mixer: AnimationMixerPlus;
 
-  private _action: AnimationAction;
-
+  private _action: AnimationAction | undefined;
   private running: boolean = false;
 
   constructor(r?: T) {
@@ -21,6 +20,15 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     this.clip = new AnimationClip('test', -1, []);
     this.root = r || (new Object3D() as T);
     this.mixer = new AnimationMixerPlus(this.root);
+    this._bindAction();
+  }
+
+  private _bindAction() {
+    if (this._action) {
+      this._action.stop();
+      this.mixer.uncacheAction(this._action.getClip());
+      this.mixer.uncacheClip(this._action.getClip());
+    }
     this._action = this.mixer.clipAction(this.clip);
     this._action.play();
   }
@@ -34,36 +42,12 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     return this;
   }
 
-  resetDuration() {
-    this.clip.resetDuration();
-    this.setDuration(this.clip.duration);
-  }
-
   setDuration(dur: number): this {
     this.clip.duration = dur;
     if (this._action) {
-      this._action.setDuration(dur);
+      this._action.getClip().duration = dur;
     }
     return this;
-  }
-
-  fromClip(clip: AnimationClip) {
-    this.fromArray(clip.tracks);
-  }
-
-  fromArray(tracks: KeyframeTrack[]) {
-    if (this._action) {
-      this._action.stop();
-      this.mixer.uncacheAction(this.clip);
-      this.mixer.uncacheClip(this.clip);
-    }
-
-    this.clip = new AnimationClip('clip', -1, tracks);
-    this._action = this.mixer.clipAction(this.clip);
-    this._action.play();
-    this.resetDuration();
-
-    this.trigger('updateProps');
   }
 
   getDuration(): number {
@@ -95,11 +79,15 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   }
 
   getActionTime(): number {
-    return this._action.time;
+    return this._action?.time || 0;
   }
 
   getTime(): number {
     return this.mixer.time;
+  }
+
+  isRunning(): boolean {
+    return this.running;
   }
 
   stop(): this {
@@ -111,5 +99,16 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
   setTime(t: number) {
     this.mixer.setTime(t);
     this.trigger('timeupdate', { time: this.mixer.time });
+  }
+
+  fromClip(clip: AnimationClip) {
+    this.fromArray(clip.tracks);
+  }
+
+  fromArray(tracks: KeyframeTrack[]) {
+    this.clip = new AnimationClip('clip', -1, tracks);
+    this._bindAction();
+
+    this.trigger('updateProps');
   }
 }

@@ -72,14 +72,14 @@ export class TrackSubheaderUI extends DivElement<RulerEvent> {
 
     this.addClass('track-sub-header');
 
-    const side = new DivElement().addClass('track-side-container').add(new AddTrackButton());
+    const side = new DivElement().addClass('track-side-container');
     const timeline = new DivElement().addClass('track-time-container');
     this.ruler = new PlayerRuler();
     this.rulerTime = new RulerTime();
     const wrapper = new DivElement().addClass('track-inner-wrapper');
     wrapper.add(this.rulerTime);
     wrapper.add(this.ruler);
-    
+
     timeline.add(wrapper);
 
     this.ruler.on('timeupdate', (e) => this.trigger('timeupdate', e));
@@ -149,8 +149,9 @@ export class KeyframeUI extends DivElement {
   updatePosition(value: number, duration: number, scale: number = 1) {
     if (duration <= 0) return;
     const pos = (value / duration) * scale * 100;
+    const margin = -5;
 
-    this.dom.style.left = `calc(${pos}% - 5px)`;
+    this.dom.style.left = `calc(${pos}% + ${margin}px)`;
   }
 }
 
@@ -167,8 +168,11 @@ export class TracksUI extends DivElement {
     this.propertyContainer = new TrackPropertyContainer();
     this.timeContainer = new TrackTimeContainer();
 
-    this.add(this.propertyContainer);
-    this.add(this.timeContainer);
+    const scrollContent = new DivElement().addClass('track-scroll-content');
+    scrollContent.add(this.propertyContainer);
+    scrollContent.add(this.timeContainer);
+
+    this.add(scrollContent);
 
     this.duration = 0;
     this.tracks = [];

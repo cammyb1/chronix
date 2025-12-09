@@ -42,6 +42,7 @@ if (app) {
   light.position.z = 15;
 
   const timeline = new AnimationTimeLine(box);
+  const timeUI = new TimeLineUI().setParent(timeline);
 
   webgl.scene.add(new DirectionalLightHelper(light));
 
@@ -50,17 +51,12 @@ if (app) {
     new NumberKeyframeTrack('.position[y]', [0, 1, 2], [0, 2, 0]),
     new NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0.25, 1]),
     new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
-    new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
-    new FunctionKeyframeTrack(
-      'testingFn',
-      [0.75, 1.5, 2],
-      ['cambiarColor:red', 'cambiarColor:blue', 'cambiarColor:white'],
-    ),
+    new FunctionKeyframeTrack('testingFn', [1, 2], ['cambiarColor:red', 'cambiarColor:white']),
   ];
 
   timeline.fromArray(tracks);
+  timeUI.on('durationChange', ({ duration }) => timeline.setDuration(duration));
 
-  const timeUI = new TimeLineUI().setParent(timeline);
   document.body.appendChild(timeUI.dom);
 
   Time.on('loop', () => timeline.update(Time.delta));
