@@ -24,9 +24,9 @@ export class AnimationMixerPlus extends AnimationMixer {
     return this;
   }
 
-  override setTime(timeInSeconds: number): this {
-    super.setTime(timeInSeconds);
-    this.eventManager.reset();
+  override setTime(time: number): this {
+    super.setTime(time);
+    this.eventManager.reset(time);
     return this;
   }
 

@@ -15,8 +15,8 @@ export default class SubHeaderPlugin implements TimeUIPlugin {
       this.container.rulerTime.setDuration(parent.getDuration());
       this.container.ruler.setDuration(parent.getDuration());
     });
-    parent.on('timeupdate', ({ time }) => {
-      this.container.ruler.setTime(time);
+    parent.on('timeupdate', () => {
+      this.container.ruler.setTime(parent.getActionTime());
     });
 
     this.container.ruler.on('timeupdate', ({ time }) => {

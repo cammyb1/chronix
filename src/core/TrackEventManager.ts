@@ -30,9 +30,9 @@ export class TrackEventManager {
     }
   }
 
-  reset() {
+  reset(time: number) {
     this.events.forEach((event) => {
-      event.frame.lastTime = 0;
+      event.frame.lastTime = time;
     });
   }
 
