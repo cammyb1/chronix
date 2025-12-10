@@ -10,10 +10,13 @@ import {
 import { mount } from './three';
 
 import './css/styles.css';
-import { AnimationTimeLine } from './timeline/AnimationTimeLine';
+import { AnimationTimeLine } from './core/AnimationTimeLine';
 import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
 import { Time } from './core/Time';
 import TimeLineUI from './ui/TimeLineUI';
+import ControlsPlugin from './ui/plugins/ControlsPlugin';
+import SubHeaderPlugin from './ui/plugins/SubHeaderPlugin';
+import TracksPlugin from './ui/plugins/TracksPlugin';
 
 const app = document.getElementById('app') as HTMLElement;
 
@@ -42,7 +45,9 @@ if (app) {
   light.position.z = 15;
 
   const timeline = new AnimationTimeLine(box);
-  const timeUI = new TimeLineUI().setParent(timeline);
+  const timeUI = new TimeLineUI({
+    plugins: [new ControlsPlugin(), new SubHeaderPlugin(), new TracksPlugin()],
+  }).setParent(timeline);
 
   webgl.scene.add(new DirectionalLightHelper(light));
 
@@ -55,7 +60,6 @@ if (app) {
   ];
 
   timeline.fromArray(tracks);
-  timeUI.on('durationChange', ({ duration }) => timeline.setDuration(duration));
 
   document.body.appendChild(timeUI.dom);
 

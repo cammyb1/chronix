@@ -24,6 +24,12 @@ export class AnimationMixerPlus extends AnimationMixer {
     return this;
   }
 
+  override setTime(timeInSeconds: number): this {
+    super.setTime(timeInSeconds);
+    this.eventManager.reset();
+    return this;
+  }
+
   override clipAction(
     clip: AnimationClip,
     optionalRoot?: Object3D,

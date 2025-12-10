@@ -1,13 +1,13 @@
 import { AnimationAction, AnimationClip, Object3D, type KeyframeTrack } from 'three';
-import { EventBus } from '../core/EventBus';
-import { AnimationMixerPlus } from '../core/AnimationMixerPlus';
+import { EventBus } from './EventBus';
+import { AnimationMixerPlus } from './AnimationMixerPlus';
 
 export interface ATLEvents {
   timeupdate: { time: number };
   updateProps: null;
 }
 
-export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
+export class AnimationTimeLine<T extends Object3D = Object3D> extends EventBus<ATLEvents> {
   protected root: T;
   protected clip: AnimationClip;
   protected mixer: AnimationMixerPlus;
@@ -47,6 +47,8 @@ export class AnimationTimeLine<T extends Object3D> extends EventBus<ATLEvents> {
     if (this._action) {
       this._action.getClip().duration = dur;
     }
+
+    this.trigger('updateProps');
     return this;
   }
 

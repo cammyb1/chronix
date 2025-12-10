@@ -1,4 +1,4 @@
-import { EventBus } from '../core/EventBus';
+import { EventBus } from '../../core/EventBus';
 
 export class UIElement<
   Events extends {} = {},
@@ -22,9 +22,7 @@ export class UIElement<
   }
 
   clear(): this {
-    this.dom.childNodes.forEach((child) => {
-      this.dom.removeChild(child);
-    });
+    this.setHTML('');
 
     return this;
   }

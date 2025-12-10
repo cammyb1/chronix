@@ -188,6 +188,7 @@ export class TracksUI extends DivElement {
   override clear(): this {
     this.propertyContainer.clear();
     this.timeContainer.clear();
+    this.tracks = [];
     return this;
   }
 

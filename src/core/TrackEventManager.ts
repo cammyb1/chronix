@@ -30,6 +30,12 @@ export class TrackEventManager {
     }
   }
 
+  reset() {
+    this.events.forEach((event) => {
+      event.frame.lastTime = 0;
+    });
+  }
+
   update() {
     this.events.forEach((event) => {
       const frameTime = event.frame.time;
