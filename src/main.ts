@@ -56,7 +56,7 @@ if (app) {
     new NumberKeyframeTrack('.position[y]', [0, 1, 2], [0, 2, 0]),
     new NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0.25, 1]),
     new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
-    new FunctionKeyframeTrack('testingFn', [1, 2], ['cambiarColor:red', 'cambiarColor:white']),
+    new FunctionKeyframeTrack('testingFn', [0.256, 2], ['cambiarColor:red', 'cambiarColor:white']),
   ];
 
   timeline.fromArray(tracks);

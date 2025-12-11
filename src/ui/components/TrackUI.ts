@@ -142,7 +142,9 @@ export class KeyframeUI extends DivElement {
     super();
 
     this.value = value;
+    const isHighValue = duration - value > 0.15;
     this.addClass('keyframe');
+    this.addAttribute(`data-tooltip-${isHighValue ? 'left' : 'right'}`, `${value.toFixed(2)}`);
     this.updatePosition(value, duration);
   }
 

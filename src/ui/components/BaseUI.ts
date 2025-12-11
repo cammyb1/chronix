@@ -27,6 +27,14 @@ export class UIElement<
     return this;
   }
 
+  addAttribute(name: string, value: string) {
+    this.dom.setAttribute(name, value);
+  }
+
+  removeAttribute(name: string) {
+    this.dom.removeAttribute(name);
+  }
+
   setId(id: string): this {
     this.dom.id = id;
     return this;
