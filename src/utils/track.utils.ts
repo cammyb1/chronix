@@ -8,7 +8,7 @@ import {
   StringKeyframeTrack,
   VectorKeyframeTrack,
 } from 'three';
-import { FunctionKeyframeTrack } from '../core/FunctionKeyframeTrack';
+import { FunctionKeyframeTrack } from '../core/3js/FunctionKeyframeTrack';
 
 export interface AnimationEvent {
   action: AnimationAction;
@@ -66,8 +66,6 @@ export function generateEventTracks(tracks: FunctionKeyframeTrack[], action: Ani
 
       if (raw === '') continue;
 
-      const root = action.getRoot();
-
       const event: AnimationEvent = {
         action,
         name: '',
@@ -80,17 +78,13 @@ export function generateEventTracks(tracks: FunctionKeyframeTrack[], action: Ani
 
       if (raw.includes(':')) {
         const [name, args] = raw.split(':');
-        if (name in root) {
-          event.name = name;
-          event.args = args.split(',').map((arg) => arg.trim());
-          events.push(event);
-        }
+        event.name = name;
+        event.args = args.split(',').map((arg) => arg.trim());
+        events.push(event);
       } else {
         const name = raw;
-        if (name in root) {
-          event.name = name;
-          events.push(event);
-        }
+        event.name = name;
+        events.push(event);
       }
     }
   });

@@ -67,22 +67,20 @@ export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
 
   update(dt: number) {
     if (!this.running) return;
-    if (this.once && this.time > this.duration) {
-      this.time = this.duration;
+    let time = this.time + dt;
+
+    if (this.once && time > this.duration) {
+      time = this.duration;
       this.pause();
-    } else if (this.time > this.duration) {
-      this.time = 0;
+    } else if (time > this.duration) {
+      time = 0;
     }
 
-    this._updateTime(this.time + dt);
+    this._updateTime(time);
   }
 
   getTracks(): TTrack[] {
     return this.engine.getTracks();
-  }
-
-  fromArray(array: TTrack[]) {
-    this.engine.fromArray(array);
   }
 
   getTime() {

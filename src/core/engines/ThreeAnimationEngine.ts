@@ -1,6 +1,6 @@
 import { AnimationAction, AnimationClip, KeyframeTrack, Object3D } from 'three';
 import { AnimationEngine } from './AnimationEngine';
-import { AnimationMixerPlus } from '../AnimationMixerPlus';
+import { AnimationMixerPlus } from '../3js/AnimationMixerPlus';
 
 export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrack> {
   protected mixer: AnimationMixerPlus;

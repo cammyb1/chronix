@@ -22,6 +22,8 @@ export default class TracksPlugin implements TimeUIPlugin {
   onAttach(parent: AnimationPlayer): void {
     this.registerTracks(parent);
 
+    parent.on('durationChange', () => this.registerTracks(parent));
+
     parent.on('trackAdd', () => {
       this.registerTracks(parent);
     });

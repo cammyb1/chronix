@@ -1,6 +1,6 @@
 import { PerspectiveCamera, WebGLRenderer, Scene } from 'three';
-import { EventBus } from './core/EventBus';
-import { Time } from './core/Time';
+import { EventBus } from '../core/EventBus';
+import { Time } from '../core/Time';
 
 export interface TEvents {
   resize: {};
