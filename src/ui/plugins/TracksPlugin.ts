@@ -1,4 +1,4 @@
-import type { AnimationTimeLine } from '../../core/AnimationTimeLine';
+import type { AnimationPlayer } from '../../core/AnimationPlayer';
 import type { UIElement } from '../components/BaseUI';
 import type TimeUIPlugin from '../TimeUIPlugin';
 import { TracksUI } from '../components/TrackUI';
@@ -10,7 +10,7 @@ export default class TracksPlugin implements TimeUIPlugin {
     this.container = new TracksUI();
   }
 
-  registerTracks(parent: AnimationTimeLine) {
+  registerTracks(parent: AnimationPlayer) {
     this.container.clear();
     this.container.setDuration(parent.getDuration());
 
@@ -19,10 +19,10 @@ export default class TracksPlugin implements TimeUIPlugin {
     });
   }
 
-  onAttach(parent: AnimationTimeLine): void {
+  onAttach(parent: AnimationPlayer): void {
     this.registerTracks(parent);
 
-    parent.on('updateProps', () => {
+    parent.on('trackAdd', () => {
       this.registerTracks(parent);
     });
   }

@@ -1,0 +1,56 @@
+import { AnimationAction, AnimationClip, KeyframeTrack, Object3D } from 'three';
+import { AnimationEngine } from './AnimationEngine';
+import { AnimationMixerPlus } from '../AnimationMixerPlus';
+
+export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrack> {
+  protected mixer: AnimationMixerPlus;
+  private _action: AnimationAction;
+
+  constructor(r?: Object3D) {
+    super(r || new Object3D());
+    this.mixer = new AnimationMixerPlus(this.root);
+    this._action = this.mixer.clipAction(new AnimationClip('clip', -1, []));
+  }
+
+  setRoot(r: Object3D): void {
+    if (this.root) {
+      this.mixer.stopAllAction();
+      this.mixer.uncacheRoot(this.root);
+    }
+    this.root = r;
+    this.mixer = new AnimationMixerPlus(r);
+    super.setRoot(r);
+  }
+
+  fromArray(array: KeyframeTrack[]): void {
+    super.fromArray(array);
+    this.refreshTracks();
+  }
+
+  refreshTracks() {
+    if (this._action) {
+      this.mixer.uncacheAction(this._action.getClip());
+      this.mixer.uncacheClip(this._action.getClip());
+    }
+    this._action = this.mixer.clipAction(
+      new AnimationClip('clip', -1, Array.from(this.tracks.values())),
+    );
+    this._action.play();
+  }
+
+  setTime(n: number) {
+    this.mixer.setTime(n);
+    super.setTime(n);
+  }
+
+  setDuration(dur: number): void {
+    const clip = this._action.getClip();
+    clip.duration = dur;
+    this._action.setDuration(dur);
+    super.setDuration(dur);
+  }
+
+  getDuration(): number {
+    return this._action.getClip().duration;
+  }
+}

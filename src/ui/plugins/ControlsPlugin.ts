@@ -1,4 +1,4 @@
-import type { AnimationTimeLine } from '../../core/AnimationTimeLine';
+import type { AnimationPlayer } from '../../core/AnimationPlayer';
 import type { UIElement } from '../components/BaseUI';
 import type TimeUIPlugin from '../TimeUIPlugin';
 import { TrackControlsUI } from '../components/TrackUI';
@@ -6,46 +6,30 @@ import { TrackControlsUI } from '../components/TrackUI';
 export default class ControlsPlugin implements TimeUIPlugin {
   name = 'ControlPlugin';
   container: TrackControlsUI;
-  parent: AnimationTimeLine | undefined;
+  parent: AnimationPlayer | undefined;
 
   constructor() {
     this.container = new TrackControlsUI();
   }
 
   init() {
-    this.container.on('play', () => {
-      if (this.parent) {
-        this.parent.play();
-      }
-    });
-    this.container.on('pause', () => {
-      if (this.parent) {
-        this.parent.pause();
-      }
-    });
-    this.container.on('stop', () => {
-      if (this.parent) {
-        this.parent.stop();
-      }
-    });
+    this.container.on('play', () => this.parent?.play());
+    this.container.on('pause', () => this.parent?.pause());
+    this.container.on('stop', () => this.parent?.stop());
 
-    this.container.on('updateDuration', ({ value }) => {
-      if (this.parent) {
-        this.parent.setDuration(value);
-      }
-    });
+    this.container.on('updateDuration', ({ value }) => this.parent?.setDuration(value));
   }
 
-  onAttach(parent: AnimationTimeLine): void {
+  onAttach(parent: AnimationPlayer): void {
     this.parent = parent;
 
     this.container.setDurationValue(this.parent.getDuration());
 
-    this.parent.on('updateProps', () => {
-      if (!this.parent) return;
-      this.container.setDurationValue(this.parent.getDuration());
+    this.parent.on('durationChange', ({ duration }) => {
+      this.container.setDurationValue(duration);
     });
   }
+
   onDetach(): void {
     this.parent = undefined;
   }

@@ -1,4 +1,4 @@
-import type { AnimationTimeLine } from '../../core/AnimationTimeLine';
+import type { AnimationPlayer } from '../../core/AnimationPlayer';
 import type { UIElement } from '../components/BaseUI';
 import type TimeUIPlugin from '../TimeUIPlugin';
 import { TrackSubheaderUI } from '../components/TrackUI';
@@ -10,13 +10,17 @@ export default class SubHeaderPlugin implements TimeUIPlugin {
     this.container = new TrackSubheaderUI();
   }
 
-  onAttach(parent: AnimationTimeLine) {
-    parent.on('updateProps', () => {
-      this.container.rulerTime.setDuration(parent.getDuration());
-      this.container.ruler.setDuration(parent.getDuration());
+  onAttach(parent: AnimationPlayer) {
+    this.container.rulerTime.setDuration(parent.getDuration());
+    this.container.ruler.setDuration(parent.getDuration());
+    this.container.ruler.setTime(parent.getTime());
+
+    parent.on('durationChange', ({ duration }) => {
+      this.container.rulerTime.setDuration(duration);
+      this.container.ruler.setDuration(duration);
     });
-    parent.on('timeupdate', () => {
-      this.container.ruler.setTime(parent.getActionTime());
+    parent.on('timeUpdate', ({ time }) => {
+      this.container.ruler.setTime(time);
     });
 
     this.container.ruler.on('timeupdate', ({ time }) => {

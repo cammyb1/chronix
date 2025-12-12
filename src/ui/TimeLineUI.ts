@@ -1,33 +1,28 @@
 import { DivElement } from './components/BaseUI';
-import { AnimationTimeLine } from '../core/AnimationTimeLine';
+import { AnimationPlayer } from '../core/AnimationPlayer';
 import type TimeUIPlugin from './TimeUIPlugin';
 
-export interface TimeLineEvents {
-  timeupdate: { time: number };
-  durationChange: { duration: number };
-}
-
 export interface TimeLineParams {
-  parent?: AnimationTimeLine;
+  parent?: AnimationPlayer;
   plugins?: TimeUIPlugin[];
 }
 
-export default class TimeLineUI extends DivElement<TimeLineEvents> {
-  parent: AnimationTimeLine | undefined;
+export default class TimeLineUI extends DivElement {
+  parent: AnimationPlayer | undefined;
   plugins: Map<string, TimeUIPlugin> = new Map();
 
   constructor({ parent, plugins }: TimeLineParams = {}) {
     super();
 
     this.addClass('timeline-container');
-    this.parent = parent;
+    this.setParent(parent);
 
     if (plugins) {
       plugins.forEach((plugin) => this.addPlugin(plugin));
     }
   }
 
-  setParent(p: AnimationTimeLine | undefined): this {
+  setParent(p: AnimationPlayer | undefined): this {
     if (!p) return this;
     this.plugins.forEach((plugin) => {
       if (this.parent) {
@@ -59,9 +54,5 @@ export default class TimeLineUI extends DivElement<TimeLineEvents> {
     plugin.exit?.();
     this.remove(plugin.render());
     this.plugins.delete(name);
-  }
-
-  setDuration(n: number) {
-    this.trigger('durationChange', { duration: n });
   }
 }

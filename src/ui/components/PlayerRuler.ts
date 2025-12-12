@@ -67,11 +67,11 @@ export class RulerTime extends DivElement {
 
   setDuration(duration: number) {
     this.dom.innerHTML = '';
-    
+
     // Determine step size based on duration
     // If duration is small (< 10s), show every 0.1s
     // If duration is medium (< 60s), show every 0.5s or 1s
-    
+
     let step = 0.1;
     if (duration > 10) step = 0.5;
     if (duration > 30) step = 1;
@@ -83,23 +83,23 @@ export class RulerTime extends DivElement {
     for (let i = 0; i <= duration + eps; i += step) {
       const tick = document.createElement('div');
       tick.classList.add('ruler-tick');
-      
+
       const left = (i / duration) * 100;
       tick.style.left = `${left}%`;
-      
+
       // Check if integer (Major tick)
       const isMajor = Math.abs(i - Math.round(i)) < eps;
 
       if (isMajor) {
-         tick.classList.add('major');
-         const label = document.createElement('span');
-         label.className = 'ruler-label';
-         label.innerText = Math.round(i).toString();
-         tick.appendChild(label);
+        tick.classList.add('major');
+        const label = document.createElement('span');
+        label.className = 'ruler-label';
+        label.innerText = Math.round(i).toString();
+        tick.appendChild(label);
       } else {
-         tick.classList.add('minor');
+        tick.classList.add('minor');
       }
-      
+
       this.dom.appendChild(tick);
     }
   }

@@ -10,13 +10,14 @@ import {
 import { mount } from './three';
 
 import './css/styles.css';
-import { AnimationTimeLine } from './core/AnimationTimeLine';
 import { FunctionKeyframeTrack } from './core/FunctionKeyframeTrack';
 import { Time } from './core/Time';
 import TimeLineUI from './ui/TimeLineUI';
 import ControlsPlugin from './ui/plugins/ControlsPlugin';
 import SubHeaderPlugin from './ui/plugins/SubHeaderPlugin';
 import TracksPlugin from './ui/plugins/TracksPlugin';
+import { ThreeAnimationEngine } from './core/engines/ThreeAnimationEngine';
+import { AnimationPlayer } from './core/AnimationPlayer';
 
 const app = document.getElementById('app') as HTMLElement;
 
@@ -44,10 +45,12 @@ if (app) {
   light.position.y = 3;
   light.position.z = 15;
 
-  const timeline = new AnimationTimeLine(box);
+  const engine = new ThreeAnimationEngine(box);
+  const timeline = new AnimationPlayer(engine);
   const timeUI = new TimeLineUI({
+    parent: timeline,
     plugins: [new ControlsPlugin(), new SubHeaderPlugin(), new TracksPlugin()],
-  }).setParent(timeline);
+  });
 
   webgl.scene.add(new DirectionalLightHelper(light));
 
@@ -56,7 +59,7 @@ if (app) {
     new NumberKeyframeTrack('.position[y]', [0, 1, 2], [0, 2, 0]),
     new NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0.25, 1]),
     new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
-    new FunctionKeyframeTrack('testingFn', [0.256, 2], ['cambiarColor:red', 'cambiarColor:white']),
+    new FunctionKeyframeTrack('testingFn', [0.6, 2], ['cambiarColor:red', 'cambiarColor:white']),
   ];
 
   timeline.fromArray(tracks);
