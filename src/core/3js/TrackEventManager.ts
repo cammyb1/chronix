@@ -1,4 +1,4 @@
-import type { AnimationAction } from 'three';
+import type { AnimationAction, Object3D } from 'three';
 import type { FunctionKeyframeTrack } from './FunctionKeyframeTrack';
 import { generateEventTracks, type AnimationEvent } from '../../utils/track.utils';
 
@@ -15,11 +15,12 @@ export class TrackEventManager {
   trigger(event: AnimationEvent) {
     const { name, action, args } = event;
 
-    const root = action.getRoot();
+    const root: Object3D = action.getRoot();
     if (!root) return;
-    const fn = (root as any)[name];
 
-    if (typeof fn === 'function') {
+    const fn: Function = root[name as keyof Object3D] as Function;
+
+    if (fn instanceof Function) {
       try {
         fn.apply(root, [...args, event]);
       } catch (error) {
@@ -44,10 +45,8 @@ export class TrackEventManager {
       const dir = time <= 0 ? 0 : time - lastTime;
 
       if (dir > 0 && lastTime < frameTime && frameTime <= time) {
-        console.log('TRIGGER MAYOR');
         this.trigger(event);
       } else if (dir < 0 && lastTime > frameTime && frameTime >= time) {
-        console.log('TRIGGER MENOR');
         this.trigger(event);
       }
 

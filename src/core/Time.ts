@@ -1,7 +1,7 @@
 import { EventBus } from './EventBus';
 
 export interface TimeEvents {
-  loop: {};
+  loop: null;
 }
 
 class TimeSingleton extends EventBus<TimeEvents> {

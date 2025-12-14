@@ -1,21 +1,21 @@
 import { EventBus } from '../../core/EventBus';
 
 export class UIElement<
-  Events extends {} = {},
-  D extends HTMLElement = HTMLElement,
-> extends EventBus<Events> {
-  dom: D;
-  constructor(dom: D) {
+  TEvents extends {} = {},
+  TDom extends HTMLElement = HTMLElement,
+> extends EventBus<TEvents> {
+  dom: TDom;
+  constructor(dom: TDom) {
     super();
     this.dom = dom;
   }
 
-  add(element: UIElement): this {
+  add(element: UIElement<any, HTMLElement>): this {
     this.dom.appendChild(element.dom);
     return this;
   }
 
-  remove(element: UIElement): this {
+  remove(element: UIElement<any>): this {
     this.dom.removeChild(element.dom);
 
     return this;
@@ -63,7 +63,7 @@ export class UIElement<
   }
 }
 
-export class DivElement<E extends {} = {}> extends UIElement<E, HTMLDivElement> {
+export class DivElement<E extends Record<string, any> = {}> extends UIElement<E, HTMLDivElement> {
   constructor() {
     super(document.createElement('div'));
   }
@@ -79,9 +79,7 @@ export class ButtonElement extends UIElement<{ click: null }, HTMLButtonElement>
   }
 }
 
-export interface ChangeEvent<E extends UIElement> {
-  target: E | null;
-}
+export type ChangeEvent<TTarget> = InputEvent & { target: TTarget };
 
 export class InputElement extends UIElement<
   { change: ChangeEvent<InputElement> },

@@ -8,7 +8,7 @@ export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
 
   time: number;
   duration: number;
-  once: boolean = true;
+  loop: boolean;
 
   protected engine: AnimationEngine<TRoot, TTrack>;
 
@@ -17,6 +17,7 @@ export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
     this.engine = engine;
     this.time = 0;
     this.duration = 1;
+    this.loop = false;
 
     // Auto-propagate engine events
     this.engine.on('timeUpdate', (e) => this.trigger('timeUpdate', e));
@@ -69,7 +70,7 @@ export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
     if (!this.running) return;
     let time = this.time + dt;
 
-    if (this.once && time > this.duration) {
+    if (!this.loop && time > this.duration) {
       time = this.duration;
       this.pause();
     } else if (time > this.duration) {
