@@ -44,6 +44,7 @@ export class AnimationEngine<IRoot, ITrack>
 {
   root: IRoot;
   tracks: ITrack[];
+  duration: number = 1;
 
   constructor(r?: IRoot) {
     super();
@@ -90,7 +91,10 @@ export class AnimationEngine<IRoot, ITrack>
     this.trigger('timeUpdate', { time: n });
   }
   setDuration(n: number): void {
+    this.duration = n;
     this.trigger('durationChange', { duration: n });
   }
-  getDuration(n: number): void {}
+  getDuration(): number {
+    return this.duration;
+  }
 }

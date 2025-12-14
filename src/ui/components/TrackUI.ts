@@ -42,15 +42,15 @@ export class TrackControlsUI extends DivElement<TrackControlEvents> {
     this.add(this.name);
     this.add(this.duration);
 
-    this.name.on('change', (e: ChangeEvent<InputElement>) => {
-      if (e.target?.dom.value) {
-        this.trigger('updateName', { value: e.target.dom.value });
+    this.name.on('change', (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target?.value) {
+        this.trigger('updateName', { value: e.target.value });
       }
     });
 
-    this.duration.on('change', (e: ChangeEvent<InputElement>) => {
-      if (e.target?.dom.value) {
-        this.trigger('updateDuration', { value: parseFloat(e.target.dom.value) });
+    this.duration.on('change', (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target?.value) {
+        this.trigger('updateDuration', { value: parseFloat(e.target.value) });
       }
     });
   }

@@ -79,10 +79,12 @@ export class ButtonElement extends UIElement<{ click: null }, HTMLButtonElement>
   }
 }
 
-export type ChangeEvent<TTarget> = InputEvent & { target: TTarget };
+export type ChangeEvent<T extends EventTarget = HTMLElement> = {
+  target: T;
+};
 
 export class InputElement extends UIElement<
-  { change: ChangeEvent<InputElement> },
+  { change: ChangeEvent<HTMLInputElement> },
   HTMLInputElement
 > {
   constructor(type: string) {
@@ -90,7 +92,7 @@ export class InputElement extends UIElement<
     this.dom.type = type;
 
     this.dom.addEventListener('change', (e: Event) => {
-      this.trigger('change', e as ChangeEvent<InputElement>);
+      this.trigger('change', { target: e.target as HTMLInputElement });
     });
   }
 }

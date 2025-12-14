@@ -49,8 +49,4 @@ export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrac
     this._action.setDuration(dur);
     super.setDuration(dur);
   }
-
-  getDuration(): number {
-    return this._action.getClip().duration;
-  }
 }
