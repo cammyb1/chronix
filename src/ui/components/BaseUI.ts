@@ -5,6 +5,7 @@ export class UIElement<
   TDom extends HTMLElement = HTMLElement,
 > extends EventBus<TEvents> {
   dom: TDom;
+
   constructor(dom: TDom) {
     super();
     this.dom = dom;
@@ -63,7 +64,7 @@ export class UIElement<
   }
 }
 
-export class DivElement<E extends Record<string, any> = {}> extends UIElement<E, HTMLDivElement> {
+export class DivElement<E extends {} = {}> extends UIElement<E, HTMLDivElement> {
   constructor() {
     super(document.createElement('div'));
   }

@@ -8,17 +8,8 @@ import {
   StringKeyframeTrack,
   VectorKeyframeTrack,
 } from 'three';
+import type { IAnimationEvent } from '../core/types';
 import { FunctionKeyframeTrack } from '../core/3js/FunctionKeyframeTrack';
-
-export interface AnimationEvent {
-  action: AnimationAction;
-  name: string;
-  args: Array<string>;
-  frame: {
-    time: number;
-    lastTime: number;
-  };
-}
 
 export enum Keyframes {
   BOOLEAN = 0,
@@ -52,7 +43,7 @@ export function getTrackByType(name: Keyframes) {
 }
 
 export function generateEventTracks(tracks: FunctionKeyframeTrack[], action: AnimationAction) {
-  const events: AnimationEvent[] = [];
+  const events: IAnimationEvent[] = [];
 
   if (!action.getRoot()) return [];
 
@@ -66,7 +57,7 @@ export function generateEventTracks(tracks: FunctionKeyframeTrack[], action: Ani
 
       if (raw === '') continue;
 
-      const event: AnimationEvent = {
+      const event: IAnimationEvent = {
         action,
         name: '',
         args: [],

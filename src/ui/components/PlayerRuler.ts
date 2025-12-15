@@ -1,10 +1,7 @@
+import type { IRulerEvent } from '../../core/types';
 import { DivElement } from './BaseUI';
 
-export interface RulerEvent {
-  timeupdate: { time: number };
-}
-
-export default class PlayerRuler extends DivElement<RulerEvent> {
+export default class PlayerRuler extends DivElement<IRulerEvent> {
   dragging: boolean = false;
   duration: number = 1;
 

@@ -1,9 +1,8 @@
 import type { AnimationPlayer } from '../../core/AnimationPlayer';
-import type { UIElement } from '../components/BaseUI';
-import type TimeUIPlugin from '../TimeUIPlugin';
+import type ITimeUIPlugin from '../../core/types';
 import { TrackControlsUI } from '../components/TrackUI';
 
-export default class ControlsPlugin implements TimeUIPlugin {
+export default class ControlsPlugin implements ITimeUIPlugin {
   name = 'ControlPlugin';
   container: TrackControlsUI;
   parent: AnimationPlayer | undefined;
@@ -34,7 +33,7 @@ export default class ControlsPlugin implements TimeUIPlugin {
     this.parent = undefined;
   }
 
-  render(): UIElement {
+  render(): TrackControlsUI {
     return this.container;
   }
 }

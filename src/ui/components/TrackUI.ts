@@ -1,17 +1,10 @@
 import type { KeyframeTrack } from 'three';
-import PlayerRuler, { RulerTime, type RulerEvent } from './PlayerRuler';
+import PlayerRuler, { RulerTime } from './PlayerRuler';
 import { UIElement, type ChangeEvent } from './BaseUI';
 import { ButtonElement, DivElement, InputElement } from './BaseUI';
+import type { IRulerEvent, ITrackControlEvents } from '../../core/types';
 
-export interface TrackControlEvents {
-  updateDuration: { value: number };
-  updateName: { value: string };
-  play: null;
-  pause: null;
-  stop: null;
-}
-
-export class TrackControlsUI extends DivElement<TrackControlEvents> {
+export class TrackControlsUI extends DivElement<ITrackControlEvents> {
   name: InputElement;
   duration: InputElement;
 
@@ -64,7 +57,7 @@ export class TrackControlsUI extends DivElement<TrackControlEvents> {
   }
 }
 
-export class TrackSubheaderUI extends DivElement<RulerEvent> {
+export class TrackSubheaderUI extends DivElement<IRulerEvent> {
   ruler: PlayerRuler;
   rulerTime: RulerTime;
   constructor() {

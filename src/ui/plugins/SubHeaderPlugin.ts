@@ -1,9 +1,8 @@
 import type { AnimationPlayer } from '../../core/AnimationPlayer';
-import type { UIElement } from '../components/BaseUI';
-import type TimeUIPlugin from '../TimeUIPlugin';
+import type ITimeUIPlugin from '../../core/types';
 import { TrackSubheaderUI } from '../components/TrackUI';
 
-export default class SubHeaderPlugin implements TimeUIPlugin {
+export default class SubHeaderPlugin implements ITimeUIPlugin {
   name = 'SubheaderPlugin';
   container: TrackSubheaderUI;
   constructor() {
@@ -28,7 +27,7 @@ export default class SubHeaderPlugin implements TimeUIPlugin {
     });
   }
 
-  render(): UIElement {
+  render(): TrackSubheaderUI {
     return this.container;
   }
 }

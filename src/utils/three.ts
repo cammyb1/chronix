@@ -1,11 +1,7 @@
 import { PerspectiveCamera, WebGLRenderer, Scene } from 'three';
 import { EventBus } from '../core/EventBus';
 import { Time } from '../core/Time';
-
-export interface TEvents {
-  resize: {};
-  tick: { dt: number; elapsed: number };
-}
+import type { IThreeExampleEvents } from '../core/types';
 
 export function mount(domElement: HTMLElement) {
   let size = { x: domElement.clientWidth, y: domElement.clientHeight };
@@ -19,7 +15,7 @@ export function mount(domElement: HTMLElement) {
     scene,
     camera,
     renderer,
-    events: new EventBus<TEvents>(),
+    events: new EventBus<IThreeExampleEvents>(),
     _tick() {
       if (!this._started) return;
 
