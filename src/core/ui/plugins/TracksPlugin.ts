@@ -28,6 +28,10 @@ export default class TracksPlugin implements TimeUIPlugin {
       parent.seek(time);
     });
 
+    parent.on('timeUpdate', ({ time }) => {
+      this.container.timeContainer.rulerTick.setTime(time);
+    });
+
     parent.on('durationChange', () => {
       this.container.setDuration(parent.getDuration());
       this.updateTracks(parent);

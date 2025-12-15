@@ -145,10 +145,7 @@ export class KeyframeUI extends DivElement {
   updatePosition(value: number, duration: number, scale: number = 1) {
     if (duration <= 0) return;
     const pos = (value / duration) * scale * 100;
-    let margin = 0; // Half of keyframe width to center it
-
-    if (value === 0) margin = -5;
-    if (value === duration) margin = 5;
+    let margin = -5; // Half of keyframe width to center it
 
     this.dom.style.left = `calc(${pos}% + ${margin}px)`;
   }

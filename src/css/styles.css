@@ -105,14 +105,14 @@ body {
 }
 
 .track-side-container {
-  width: 250px;
+  width: 15%;
   height: 100%;
   background: var(--bg-panel);
   border-right: 1px solid var(--border-color);
 }
 
 .track-time-container {
-  width: calc(100% - 250px);
+  width: 85%;
   height: 100%;
   background: var(--bg-dark);
 }
@@ -303,7 +303,7 @@ body {
   border-top: 1px solid var(--border-color);
   overflow-y: auto;
   scrollbar-color: var(--border-light) transparent;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   height: calc(100% - 36px);
 }
 
