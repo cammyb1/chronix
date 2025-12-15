@@ -16,6 +16,18 @@ export interface AnimationPlayerConfig {
   engine?: AnimationEngine<any, any>;
 }
 
+export interface ITrackManager {
+  addTrack(track: object): void;
+  updateTrack(index: number, track: object): void;
+  removeTrack(track: object): void;
+  getTracksByName(name: string): object[];
+  getTracksByProperty<K extends string>(key: K, value: any): object[];
+  filterTracks(predicate: (track: object) => boolean): object[];
+  hasTrack(track: object): boolean;
+  getTracks(): object[];
+  clearTracks(): void;
+}
+
 export interface IAnimationEvents<IRoot, ITrack> {
   // Playback events
   play: null;

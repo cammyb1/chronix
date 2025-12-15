@@ -57,8 +57,18 @@ export class AnimationPlayer<TRoot = any, TTrack extends object = any> extends E
 
   stop(): this {
     this.running = false;
-    this.setTime(0);
+    this.seek(0);
     this.trigger('stop');
+    return this;
+  }
+
+  toggle(): this {
+    return this.running ? this.pause() : this.play();
+  }
+
+  restart(): this {
+    this.seek(0);
+    this.play();
     return this;
   }
 
@@ -115,7 +125,10 @@ export class AnimationPlayer<TRoot = any, TTrack extends object = any> extends E
     this._updateTime(time);
   }
 
-  setTime(t: number) {
+  seek(t: number) {
+    if (t < 0 || t > this.duration) {
+      throw new Error(`Time must be between 0 and ${this.duration}`);
+    }
     this._updateTime(t);
   }
 }
