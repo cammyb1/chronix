@@ -125,7 +125,10 @@ export class AnimationPlayer<TRoot = any, TTrack extends object = any> extends E
     if (!this.engine) return;
     // Auto-propagate engine events
     this.engine.on('timeUpdate', (e) => this.trigger('timeUpdate', e));
-    this.engine.on('durationChange', (e) => this.trigger('durationChange', e));
+    this.engine.on('durationChange', (e) => {
+      this.duration = e.duration;
+      this.trigger('durationChange', e);
+    });
     this.engine.on('trackAdd', (e) => this.trigger('trackAdd', e));
     this.engine.on('trackRemove', (e) => this.trigger('trackRemove', e));
     this.engine.on('trackUpdate', (e) => this.trigger('trackUpdate', e));

@@ -1,6 +1,6 @@
 import { DivElement } from './components/BaseUI';
 import { AnimationPlayer } from '../AnimationPlayer';
-import type TimeUIPlugin from './TimeUIPlugin';
+import type TimeUIPlugin from '../types';
 
 export interface TimeLineParams {
   parent?: AnimationPlayer;
@@ -10,6 +10,7 @@ export interface TimeLineParams {
 export default class TimeLineUI extends DivElement {
   parent: AnimationPlayer | undefined;
   plugins: Map<string, TimeUIPlugin> = new Map();
+  _observer: MutationObserver | undefined;
 
   constructor({ parent, plugins }: TimeLineParams = {}) {
     super();
@@ -20,6 +21,28 @@ export default class TimeLineUI extends DivElement {
     if (plugins) {
       plugins.forEach((plugin) => this.addPlugin(plugin));
     }
+
+    this._observer = new MutationObserver((mutations) => {
+      this.plugins.forEach((plugin) => {
+        const targetAdded = mutations.some((mutation) => {
+          return Array.from(mutation.addedNodes).includes(plugin.render().dom);
+        });
+
+        const targetRemoved = mutations.some((mutation) => {
+          return Array.from(mutation.removedNodes).includes(plugin.render().dom);
+        });
+
+        if (targetAdded) {
+          plugin.onMount?.();
+        }
+
+        if (targetRemoved) {
+          plugin.onDismount?.();
+        }
+      });
+    });
+
+    this._observer.observe(this.dom, { childList: true });
   }
 
   setParent(p: AnimationPlayer | undefined): this {
@@ -35,24 +58,29 @@ export default class TimeLineUI extends DivElement {
     return this;
   }
 
-  addPlugin(plugin: TimeUIPlugin) {
-    if (this.plugins.has(plugin.name)) return;
+  addPlugin(plugin: TimeUIPlugin): this {
+    if (this.plugins.has(plugin.name)) return this;
     this.plugins.set(plugin.name, plugin);
-    plugin.init?.();
+
+    const target = plugin.render();
+
+    this.add(target);
+
+    plugin.onAdd?.();
 
     if (this.parent) {
       plugin.onAttach?.(this.parent);
     }
-
-    this.add(plugin.render());
+    return this;
   }
 
-  removePlugin(name: string) {
+  removePlugin(name: string): this {
     const plugin = this.plugins.get(name);
-    if (!plugin) return;
+    if (!plugin) return this;
 
     plugin.exit?.();
     this.remove(plugin.render());
     this.plugins.delete(name);
+    return this;
   }
 }

@@ -8,13 +8,10 @@ import {
   NumberKeyframeTrack,
 } from 'three';
 import { mount } from '../core/utils/three';
-
-import '../css/styles.css';
-import { FunctionKeyframeTrack } from '../core/3js/FunctionKeyframeTrack';
+import { FunctionKeyframeTrack } from '../core/three/FunctionKeyframeTrack';
 import { Time } from '../core/Time';
 import TimeLineUI from '../core/ui/TimeLineUI';
 import ControlsPlugin from '../core/ui/plugins/ControlsPlugin';
-import SubHeaderPlugin from '../core/ui/plugins/SubHeaderPlugin';
 import TracksPlugin from '../core/ui/plugins/TracksPlugin';
 import { AnimationPlayer } from '../core/AnimationPlayer';
 import EngineBuilder from '../core/EngineBuilder';
@@ -45,11 +42,12 @@ export default {
     light.position.y = 3;
     light.position.z = 15;
 
-    const timeline = new AnimationPlayer().setEngine(EngineBuilder.create('three', box));
-    const timeUI = new TimeLineUI({
-      parent: timeline,
-      plugins: [new ControlsPlugin(), new SubHeaderPlugin(), new TracksPlugin()],
-    });
+    const engine = EngineBuilder.create('three', box);
+    const timeline = new AnimationPlayer().setEngine(engine);
+    const timeUI = new TimeLineUI()
+      .addPlugin(new ControlsPlugin())
+      .addPlugin(new TracksPlugin())
+      .setParent(timeline);
 
     webgl.scene.add(new DirectionalLightHelper(light));
 
@@ -57,6 +55,16 @@ export default {
       new NumberKeyframeTrack('.rotation[x]', [0, 1, 2], [0, Math.PI, 0]),
       new NumberKeyframeTrack('.position[y]', [0, 1, 2], [0, 2, 0]),
       new NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0.25, 1]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
+      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
       new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
       new FunctionKeyframeTrack('testingFn', [0.6, 2], ['cambiarColor:red', 'cambiarColor:white']),
     ];

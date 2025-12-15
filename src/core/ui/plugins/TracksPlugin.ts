@@ -9,7 +9,12 @@ export default class TracksPlugin implements TimeUIPlugin {
     this.container = new TracksUI();
   }
 
-  registerTracks(parent: AnimationPlayer) {
+  onMount() {
+    const timeContainerBounds = this.container.timeContainer.dom.getBoundingClientRect();
+    this.container.timeContainer.updateRulerHeight(timeContainerBounds.height);
+  }
+
+  updateTracks(parent: AnimationPlayer) {
     this.container.clear();
     this.container.setDuration(parent.getDuration());
 
@@ -19,13 +24,17 @@ export default class TracksPlugin implements TimeUIPlugin {
   }
 
   onAttach(parent: AnimationPlayer): void {
-    this.registerTracks(parent);
-
-    parent.on('durationChange', () => this.registerTracks(parent));
-
-    parent.on('trackAdd', () => {
-      this.registerTracks(parent);
+    this.container.on('timeupdate', ({ time }) => {
+      parent.seek(time);
     });
+
+    parent.on('durationChange', () => {
+      this.container.setDuration(parent.getDuration());
+      this.updateTracks(parent);
+    });
+    parent.on('trackAdd', () => this.updateTracks(parent));
+    parent.on('trackRemove', () => this.updateTracks(parent));
+    parent.on('trackUpdate', () => this.updateTracks(parent));
   }
 
   render(): TracksUI {

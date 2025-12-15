@@ -55,19 +55,25 @@ export default class PlayerRuler extends DivElement<IRulerEvent> {
   };
 }
 
-export class RulerTime extends DivElement<{ click: { event: PointerEvent } }> {
+export class RulerTime extends DivElement<{ timeupdate: { time: number } }> {
+  duration: number = 1;
   constructor() {
     super();
 
     this.addClass('track-ruler');
 
     this.dom.onclick = (e: PointerEvent) => {
-      this.trigger('click', { event: e });
+      const rect = this.dom.getBoundingClientRect();
+      const clickPosition = e.clientX - rect.left;
+      const totalWidth = rect.width;
+      const time = (clickPosition / totalWidth) * this.duration;
+      this.trigger('timeupdate', { time });
     };
   }
 
   setDuration(duration: number) {
     this.dom.innerHTML = '';
+    this.duration = duration;
 
     // Determine step size based on duration
     // If duration is small (< 10s), show every 0.1s

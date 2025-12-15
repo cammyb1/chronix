@@ -9,7 +9,7 @@ import {
   VectorKeyframeTrack,
 } from 'three';
 import type { IAnimationEvent } from '../types';
-import { FunctionKeyframeTrack } from '../3js/FunctionKeyframeTrack';
+import { FunctionKeyframeTrack } from '../three/FunctionKeyframeTrack';
 
 export enum Keyframes {
   BOOLEAN = 0,

@@ -55,7 +55,9 @@ export interface IRulerEvent {
 
 export default interface TimeUIPlugin<T extends UIElement = UIElement> {
   name: string;
-  init?(): void;
+  onAdd?(): void;
+  onMount?(): void;
+  onDismount?(): void;
   onAttach?(parent: AnimationPlayer): void;
   onDetach?(parent: AnimationPlayer): void;
   exit?(): void;

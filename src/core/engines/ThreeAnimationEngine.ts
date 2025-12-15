@@ -1,6 +1,6 @@
 import { AnimationAction, AnimationClip, KeyframeTrack, Object3D } from 'three';
 import { AnimationEngine } from './AnimationEngine';
-import { AnimationMixerPlus } from '../3js/AnimationMixerPlus';
+import { AnimationMixerPlus } from '../three/AnimationMixerPlus';
 
 export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrack> {
   protected mixer: AnimationMixerPlus;
@@ -58,7 +58,9 @@ export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrac
     this._action = this.mixer.clipAction(
       new AnimationClip('clip', -1, Array.from(this.tracks.values())),
     );
+    const duration = this._action.getClip().duration;
     this._action.play();
+    this.setDuration(duration);
   }
 
   setTime(n: number) {

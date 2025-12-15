@@ -11,11 +11,10 @@ export default class ControlsPlugin implements TimeUIPlugin {
     this.container = new TrackControlsUI();
   }
 
-  init() {
+  onAdd() {
     this.container.on('play', () => this.parent?.play());
     this.container.on('pause', () => this.parent?.pause());
     this.container.on('stop', () => this.parent?.stop());
-
     this.container.on('updateDuration', ({ value }) => this.parent?.setDuration(value));
   }
 

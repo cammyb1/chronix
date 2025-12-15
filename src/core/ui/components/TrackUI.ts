@@ -1,8 +1,8 @@
 import type { KeyframeTrack } from 'three';
 import PlayerRuler, { RulerTime } from './PlayerRuler';
-import { UIElement, type ChangeEvent } from './BaseUI';
+import { type ChangeEvent } from './BaseUI';
 import { ButtonElement, DivElement, InputElement } from './BaseUI';
-import type { IRulerEvent, ITrackControlEvents } from '../../types';
+import type { ITrackControlEvents } from '../../types';
 
 export class TrackControlsUI extends DivElement<ITrackControlEvents> {
   name: InputElement;
@@ -57,66 +57,67 @@ export class TrackControlsUI extends DivElement<ITrackControlEvents> {
   }
 }
 
-export class TrackSubheaderUI extends DivElement<IRulerEvent> {
-  ruler: PlayerRuler;
-  rulerTime: RulerTime;
-  constructor() {
-    super();
-
-    this.addClass('track-sub-header');
-
-    const side = new DivElement().addClass('track-side-container');
-    const timeline = new DivElement().addClass('track-time-container');
-    this.ruler = new PlayerRuler();
-    this.rulerTime = new RulerTime();
-    const wrapper = new DivElement().addClass('track-inner-wrapper');
-    wrapper.add(this.rulerTime);
-    wrapper.add(this.ruler);
-
-    timeline.add(wrapper);
-
-    this.ruler.on('timeupdate', (e) => this.trigger('timeupdate', e));
-
-    this.add(side);
-    this.add(timeline);
-  }
-
-  setTime(t: number) {
-    this.ruler.setTime(t);
-  }
-
-  setDuration(d: number) {
-    this.ruler.setDuration(d);
-    (this.rulerTime as RulerTime).setDuration(d);
-  }
-}
-
-export class AddTrackButton extends DivElement {
-  constructor() {
-    super();
-    const button = new ButtonElement().addClass(['track-button', 'icon-plus']);
-    const label = new UIElement(document.createElement('span'));
-
-    label.setHTML('Add keyframe');
-
-    this.add(button);
-    this.add(label);
-    this.addClass('track-addTrack');
-  }
-}
-
-export class TrackPropertyContainer extends DivElement {
+export class TrackSideContainer extends DivElement {
+  content: DivElement;
   constructor() {
     super();
 
     this.addClass('track-side-container');
+    this.content = new DivElement().addClass('track-side-content');
+    this.add(new DivElement().addClass('property-header'));
+    this.add(this.content);
   }
 }
 
-export class TrackTimeContainer extends DivElement {
+export class TrackTimeContainer extends DivElement<{
+  scroll: { target: HTMLElement };
+  timeupdate: { time: number };
+}> {
+  tracksContainer: DivElement;
+  rulerTick: PlayerRuler;
+  rulerTime: RulerTime;
+
   constructor() {
     super();
     this.addClass('track-time-container');
+
+    this.tracksContainer = new DivElement().addClass('tracks-container');
+
+    // Ruler over Time container
+    const rulerContainer = new DivElement().addClass('ruler-container');
+    const rullerInner = new DivElement().addClass('ruler-inner-wrapper');
+    this.rulerTick = new PlayerRuler();
+    this.rulerTime = new RulerTime();
+    rullerInner.add(this.rulerTime);
+    rullerInner.add(this.rulerTick);
+    rulerContainer.add(rullerInner);
+
+    this.tracksContainer.dom.addEventListener('scroll', (e: Event) => {
+      if (e.target) {
+        this.trigger('scroll', { target: e.target as HTMLElement });
+      }
+    });
+
+    this.rulerTick.on('timeupdate', ({ time }) => {
+      this.trigger('timeupdate', { time });
+    });
+
+    this.rulerTime.on('timeupdate', ({ time }) => {
+      this.rulerTick.setTime(time);
+      this.trigger('timeupdate', { time });
+    });
+
+    this.add(rulerContainer);
+    this.add(this.tracksContainer);
+  }
+
+  updateRulerHeight(height: number) {
+    this.rulerTick.dom.style.height = `${height}px`;
+  }
+
+  setDuration(v: number) {
+    this.rulerTick.setDuration(v);
+    this.rulerTime.setDuration(v);
   }
 }
 
@@ -144,14 +145,17 @@ export class KeyframeUI extends DivElement {
   updatePosition(value: number, duration: number, scale: number = 1) {
     if (duration <= 0) return;
     const pos = (value / duration) * scale * 100;
-    const margin = -5;
+    let margin = 0; // Half of keyframe width to center it
+
+    if (value === 0) margin = -5;
+    if (value === duration) margin = 5;
 
     this.dom.style.left = `calc(${pos}% + ${margin}px)`;
   }
 }
 
-export class TracksUI extends DivElement {
-  propertyContainer: TrackPropertyContainer;
+export class TracksUI extends DivElement<{ timeupdate: { time: number } }> {
+  sideContainer: TrackSideContainer;
   timeContainer: TrackTimeContainer;
 
   tracks: Array<{ name: PropertyUI; frame: KeyframeUI }>;
@@ -160,29 +164,43 @@ export class TracksUI extends DivElement {
   constructor() {
     super();
 
-    this.propertyContainer = new TrackPropertyContainer();
+    this.sideContainer = new TrackSideContainer();
     this.timeContainer = new TrackTimeContainer();
-
-    const scrollContent = new DivElement().addClass('track-scroll-content');
-    scrollContent.add(this.propertyContainer);
-    scrollContent.add(this.timeContainer);
-
-    this.add(scrollContent);
 
     this.duration = 0;
     this.tracks = [];
 
     this.addClass('track-body');
+
+    const onScroll = (e: { target: HTMLElement } | Event) => {
+      const target = e.target as HTMLElement;
+      if (target === this.timeContainer.tracksContainer.dom) {
+        this.sideContainer.content.dom.scrollTop = target.scrollTop;
+      } else if (target === this.sideContainer.content.dom) {
+        this.timeContainer.tracksContainer.dom.scrollTop = target.scrollTop;
+      }
+    };
+
+    this.timeContainer.on('timeupdate', ({ time }) => {
+      this.trigger('timeupdate', { time });
+    });
+    this.timeContainer.on('scroll', onScroll);
+    this.sideContainer.content.dom.addEventListener('scroll', onScroll);
+
+    // Scrollable content
+    this.add(this.sideContainer);
+    this.add(this.timeContainer);
   }
 
   setDuration(v: number) {
     this.duration = v;
+    this.timeContainer.setDuration(v);
     this.refreshTracks();
   }
 
   override clear(): this {
-    this.propertyContainer.clear();
-    this.timeContainer.clear();
+    this.sideContainer.content.clear();
+    this.timeContainer.tracksContainer.clear();
     this.tracks = [];
     return this;
   }
@@ -195,18 +213,19 @@ export class TracksUI extends DivElement {
 
   fromTrack(track: KeyframeTrack) {
     const kProperty = new PropertyUI(track.name);
-    this.propertyContainer.add(kProperty);
+    this.sideContainer.content.add(kProperty);
 
     const kcontainer = new DivElement().addClass('keyframe-container');
-    const wrapper = new DivElement().addClass('track-inner-wrapper');
+    const inner = new DivElement().addClass('track-inner-wrapper');
 
     track.times.forEach((t) => {
       const kFrames = new KeyframeUI(t, this.duration);
       this.tracks.push({ name: kProperty, frame: kFrames });
-      wrapper.add(kFrames);
+      inner.add(kFrames);
     });
 
-    kcontainer.add(wrapper);
-    this.timeContainer.add(kcontainer);
+    kcontainer.add(inner);
+
+    this.timeContainer.tracksContainer.add(kcontainer);
   }
 }
