@@ -1,6 +1,6 @@
 import type { AnimationAction, Object3D } from 'three';
 import type { FunctionKeyframeTrack } from './FunctionKeyframeTrack';
-import { generateEventTracks, type AnimationEvent } from '../../utils/track.utils';
+import { generateEventTracks, type AnimationEvent } from '../utils/track.utils';
 
 export class TrackEventManager {
   private events: AnimationEvent[] = [];

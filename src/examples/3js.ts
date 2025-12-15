@@ -7,15 +7,15 @@ import {
   MeshStandardMaterial,
   NumberKeyframeTrack,
 } from 'three';
-import { mount } from '../utils/three';
+import { mount } from '../core/utils/three';
 
 import '../css/styles.css';
 import { FunctionKeyframeTrack } from '../core/3js/FunctionKeyframeTrack';
 import { Time } from '../core/Time';
-import TimeLineUI from '../ui/TimeLineUI';
-import ControlsPlugin from '../ui/plugins/ControlsPlugin';
-import SubHeaderPlugin from '../ui/plugins/SubHeaderPlugin';
-import TracksPlugin from '../ui/plugins/TracksPlugin';
+import TimeLineUI from '../core/ui/TimeLineUI';
+import ControlsPlugin from '../core/ui/plugins/ControlsPlugin';
+import SubHeaderPlugin from '../core/ui/plugins/SubHeaderPlugin';
+import TracksPlugin from '../core/ui/plugins/TracksPlugin';
 import { AnimationPlayer } from '../core/AnimationPlayer';
 import EngineBuilder from '../core/EngineBuilder';
 

@@ -1,7 +1,7 @@
 import { PerspectiveCamera, WebGLRenderer, Scene } from 'three';
-import { EventBus } from '../core/EventBus';
-import { Time } from '../core/Time';
-import type { IThreeExampleEvents } from '../core/types';
+import { EventBus } from '../EventBus';
+import { Time } from '../Time';
+import type { IThreeExampleEvents } from '../types';
 
 export function mount(domElement: HTMLElement) {
   let size = { x: domElement.clientWidth, y: domElement.clientHeight };

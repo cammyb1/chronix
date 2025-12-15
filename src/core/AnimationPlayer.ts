@@ -95,17 +95,6 @@ export class AnimationPlayer<TRoot = any, TTrack extends object = any> extends E
     return this;
   }
 
-  private _propagateEngine(): void {
-    if (!this.engine) return;
-    // Auto-propagate engine events
-    this.engine.on('timeUpdate', (e) => this.trigger('timeUpdate', e));
-    this.engine.on('durationChange', (e) => this.trigger('durationChange', e));
-    this.engine.on('trackAdd', (e) => this.trigger('trackAdd', e));
-    this.engine.on('trackRemove', (e) => this.trigger('trackRemove', e));
-    this.engine.on('trackUpdate', (e) => this.trigger('trackUpdate', e));
-    this.engine.on('rootChange', (e) => this.trigger('rootChange', e));
-  }
-
   private _updateTime(t: number): void {
     this.time = t;
     this.engine?.setTime(t);
@@ -130,5 +119,16 @@ export class AnimationPlayer<TRoot = any, TTrack extends object = any> extends E
       throw new Error(`Time must be between 0 and ${this.duration}`);
     }
     this._updateTime(t);
+  }
+
+  private _propagateEngine(): void {
+    if (!this.engine) return;
+    // Auto-propagate engine events
+    this.engine.on('timeUpdate', (e) => this.trigger('timeUpdate', e));
+    this.engine.on('durationChange', (e) => this.trigger('durationChange', e));
+    this.engine.on('trackAdd', (e) => this.trigger('trackAdd', e));
+    this.engine.on('trackRemove', (e) => this.trigger('trackRemove', e));
+    this.engine.on('trackUpdate', (e) => this.trigger('trackUpdate', e));
+    this.engine.on('rootChange', (e) => this.trigger('rootChange', e));
   }
 }

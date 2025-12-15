@@ -1,5 +1,5 @@
 import { DivElement } from './components/BaseUI';
-import { AnimationPlayer } from '../core/AnimationPlayer';
+import { AnimationPlayer } from '../AnimationPlayer';
 import type TimeUIPlugin from './TimeUIPlugin';
 
 export interface TimeLineParams {

@@ -1,5 +1,5 @@
-import type { AnimationPlayer } from '../../core/AnimationPlayer';
-import type TimeUIPlugin from '../../core/types';
+import type { AnimationPlayer } from '../../AnimationPlayer';
+import type TimeUIPlugin from '../../types';
 import { TrackSubheaderUI } from '../components/TrackUI';
 
 export default class SubHeaderPlugin implements TimeUIPlugin {
@@ -14,6 +14,18 @@ export default class SubHeaderPlugin implements TimeUIPlugin {
     this.container.ruler.setDuration(parent.getDuration());
     this.container.ruler.setTime(parent.getTime());
 
+    this.container.rulerTime.on('click', ({ event }) => {
+      const rect = (event.target as HTMLElement).getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const width = rect.width;
+
+      let percentage = x / width;
+      percentage = Math.max(0, Math.min(1, percentage));
+      const time = percentage * parent.getDuration();
+
+      parent.seek(time);
+    });
+
     parent.on('durationChange', ({ duration }) => {
       this.container.rulerTime.setDuration(duration);
       this.container.ruler.setDuration(duration);
@@ -23,7 +35,7 @@ export default class SubHeaderPlugin implements TimeUIPlugin {
     });
 
     this.container.ruler.on('timeupdate', ({ time }) => {
-      parent.setTime(time);
+      parent.seek(time);
     });
   }
 

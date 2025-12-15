@@ -1,6 +1,6 @@
 import type { AnimationAction } from 'three';
 import type { AnimationPlayer } from './AnimationPlayer';
-import type { UIElement } from '../ui/components/BaseUI';
+import type { UIElement } from './ui/components/BaseUI';
 import type { AnimationEngine } from './engines/AnimationEngine';
 
 export interface IThreeExampleEvents {

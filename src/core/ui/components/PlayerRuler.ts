@@ -1,4 +1,4 @@
-import type { IRulerEvent } from '../../core/types';
+import type { IRulerEvent } from '../../types';
 import { DivElement } from './BaseUI';
 
 export default class PlayerRuler extends DivElement<IRulerEvent> {
@@ -55,11 +55,15 @@ export default class PlayerRuler extends DivElement<IRulerEvent> {
   };
 }
 
-export class RulerTime extends DivElement {
+export class RulerTime extends DivElement<{ click: { event: PointerEvent } }> {
   constructor() {
     super();
 
     this.addClass('track-ruler');
+
+    this.dom.onclick = (e: PointerEvent) => {
+      this.trigger('click', { event: e });
+    };
   }
 
   setDuration(duration: number) {

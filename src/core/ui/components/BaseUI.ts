@@ -1,4 +1,4 @@
-import { EventBus } from '../../core/EventBus';
+import { EventBus } from '../../EventBus';
 
 export class UIElement<
   TEvents extends {} = {},

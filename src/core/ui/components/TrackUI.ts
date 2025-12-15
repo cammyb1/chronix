@@ -2,7 +2,7 @@ import type { KeyframeTrack } from 'three';
 import PlayerRuler, { RulerTime } from './PlayerRuler';
 import { UIElement, type ChangeEvent } from './BaseUI';
 import { ButtonElement, DivElement, InputElement } from './BaseUI';
-import type { IRulerEvent, ITrackControlEvents } from '../../core/types';
+import type { IRulerEvent, ITrackControlEvents } from '../../types';
 
 export class TrackControlsUI extends DivElement<ITrackControlEvents> {
   name: InputElement;

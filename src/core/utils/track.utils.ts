@@ -8,8 +8,8 @@ import {
   StringKeyframeTrack,
   VectorKeyframeTrack,
 } from 'three';
-import type { IAnimationEvent } from '../core/types';
-import { FunctionKeyframeTrack } from '../core/3js/FunctionKeyframeTrack';
+import type { IAnimationEvent } from '../types';
+import { FunctionKeyframeTrack } from '../3js/FunctionKeyframeTrack';
 
 export enum Keyframes {
   BOOLEAN = 0,
