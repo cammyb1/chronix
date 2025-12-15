@@ -1,8 +1,8 @@
 import { EventBus } from './EventBus';
-import type { AnimationEngine, IAnimationEvents } from './engines/AnimationEngine';
-import type { AnimationPlayerConfig } from './types';
+import type { AnimationEngine } from './engines/AnimationEngine';
+import type { AnimationPlayerConfig, IAnimationEvents } from './types';
 
-export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
+export class AnimationPlayer<TRoot = any, TTrack extends object = any> extends EventBus<
   IAnimationEvents<TRoot, TTrack>
 > {
   protected running: boolean = false;

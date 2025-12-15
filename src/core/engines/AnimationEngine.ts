@@ -1,7 +1,9 @@
 import { EventBus } from '../EventBus';
 import type { IAnimationEvents } from '../types';
 
-export class AnimationEngine<IRoot, ITrack> extends EventBus<IAnimationEvents<IRoot, ITrack>> {
+export class AnimationEngine<IRoot, ITrack extends object> extends EventBus<
+  IAnimationEvents<IRoot, ITrack>
+> {
   root: IRoot;
   tracks: ITrack[];
   duration: number = 1;
@@ -16,6 +18,7 @@ export class AnimationEngine<IRoot, ITrack> extends EventBus<IAnimationEvents<IR
     this.root = r;
     this.trigger('rootChange', { root: r });
   }
+
   getTracks(): ITrack[] {
     return Array.from(this.tracks.values());
   }
@@ -30,19 +33,42 @@ export class AnimationEngine<IRoot, ITrack> extends EventBus<IAnimationEvents<IR
     this.tracks.forEach((t) => this.removeTrack(t));
   }
 
+  getTracksByName(name: string): ITrack[] {
+    return this.getTracksByProperty('name', name);
+  }
+
+  getTracksByProperty<K extends string>(key: K, value: any): ITrack[] {
+    return this.filterTracks((track: ITrack) => {
+      return key in track && (track as any)[key] === value;
+    });
+  }
+
+  filterTracks(preditacte: (track: ITrack) => boolean): ITrack[] {
+    return this.tracks.filter(preditacte);
+  }
+
+  hasTrack(track: ITrack): boolean {
+    return this.findTrackIndex(track) >= 0;
+  }
+
+  private findTrackIndex(track: ITrack): number {
+    return this.tracks.findIndex((t) => t === track);
+  }
+
+  updateTrack(index: number, track: ITrack): void {
+    if (!this.tracks[index]) return;
+    this.tracks.splice(index, 1, track);
+    this.trigger('trackUpdated', { track });
+  }
+
   addTrack(track: ITrack): void {
-    const existingIndex = this.tracks.indexOf(track);
-    if (existingIndex >= 0) {
-      this.tracks.splice(existingIndex, 1, track);
-      this.trigger('trackUpdate', { track });
-    } else {
-      this.tracks.push(track);
-      this.trigger('trackAdd', { track });
-    }
+    if (this.hasTrack(track)) return;
+    this.tracks.push(track);
+    this.trigger('trackAdd', { track });
   }
 
   removeTrack(track: ITrack): void {
-    const existingIndex = this.tracks.indexOf(track);
+    const existingIndex = this.findTrackIndex(track);
     if (existingIndex < 0) return;
     this.tracks.splice(existingIndex, 1);
     this.trigger('trackRemove', { track });

@@ -32,9 +32,22 @@ export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrac
     this.refreshTracks();
   }
 
+  updateTrack(index: number, track: KeyframeTrack): void {
+    super.updateTrack(index, track);
+    this.refreshTracks();
+  }
+
   clearTracks(): void {
     super.clearTracks();
     this.refreshTracks();
+  }
+
+  getAction(): AnimationAction {
+    return this._action;
+  }
+
+  getMixer(): AnimationMixerPlus {
+    return this.mixer;
   }
 
   refreshTracks() {
