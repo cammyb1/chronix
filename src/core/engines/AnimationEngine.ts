@@ -1,47 +1,7 @@
 import { EventBus } from '../EventBus';
+import type { IAnimationEvents } from '../types';
 
-export interface IAnimationEvents<IRoot, ITrack> {
-  // Playback events
-  play: null;
-  pause: null;
-  stop: null;
-
-  // Time events
-  timeUpdate: { time: number };
-
-  // Duration events
-  durationChange: { duration: number };
-
-  // Track events
-  trackAdd: { track: ITrack };
-  trackRemove: { track: ITrack };
-  trackUpdate: { track: ITrack };
-
-  // Root events
-  rootChange: { root: IRoot };
-}
-
-export type IAnimationEngine<IRoot, ITrack> = {
-  root: IRoot;
-  tracks: ITrack[];
-  setRoot(r: IRoot): void;
-
-  getTracks(): ITrack[];
-  fromArray(array: ITrack[]): void;
-
-  addTrack(track: ITrack): void;
-  removeTrack(track: ITrack): void;
-  clearTracks(): void;
-
-  setTime(n: number): void;
-  setDuration(n: number): void;
-  getDuration(n: number): void;
-};
-
-export class AnimationEngine<IRoot, ITrack>
-  extends EventBus<IAnimationEvents<IRoot, ITrack>>
-  implements IAnimationEngine<IRoot, ITrack>
-{
+export class AnimationEngine<IRoot, ITrack> extends EventBus<IAnimationEvents<IRoot, ITrack>> {
   root: IRoot;
   tracks: ITrack[];
   duration: number = 1;
@@ -59,6 +19,7 @@ export class AnimationEngine<IRoot, ITrack>
   getTracks(): ITrack[] {
     return Array.from(this.tracks.values());
   }
+
   fromArray(array: ITrack[]): void {
     array.forEach((track) => {
       this.addTrack(track);

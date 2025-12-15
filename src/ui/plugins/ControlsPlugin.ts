@@ -1,8 +1,8 @@
 import type { AnimationPlayer } from '../../core/AnimationPlayer';
-import type ITimeUIPlugin from '../../core/types';
+import type TimeUIPlugin from '../../core/types';
 import { TrackControlsUI } from '../components/TrackUI';
 
-export default class ControlsPlugin implements ITimeUIPlugin {
+export default class ControlsPlugin implements TimeUIPlugin {
   name = 'ControlPlugin';
   container: TrackControlsUI;
   parent: AnimationPlayer | undefined;

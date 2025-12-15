@@ -1,5 +1,6 @@
 import { EventBus } from './EventBus';
 import type { AnimationEngine, IAnimationEvents } from './engines/AnimationEngine';
+import type { AnimationPlayerConfig } from './types';
 
 export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
   IAnimationEvents<TRoot, TTrack>
@@ -10,27 +11,27 @@ export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
   duration: number;
   loop: boolean;
 
-  protected engine: AnimationEngine<TRoot, TTrack>;
+  protected engine: AnimationEngine<TRoot, TTrack> | undefined;
 
-  constructor(engine: AnimationEngine<TRoot, TTrack>) {
+  constructor(config: Partial<AnimationPlayerConfig> = {}) {
     super();
-    this.engine = engine;
-    this.time = 0;
-    this.duration = 1;
-    this.loop = false;
+    this.duration = config?.duration || 1;
+    this.loop = config?.loop || false;
+    this.time = config?.startTime || 0;
 
-    // Auto-propagate engine events
-    this.engine.on('timeUpdate', (e) => this.trigger('timeUpdate', e));
-    this.engine.on('durationChange', (e) => this.trigger('durationChange', e));
-    this.engine.on('trackAdd', (e) => this.trigger('trackAdd', e));
-    this.engine.on('trackRemove', (e) => this.trigger('trackRemove', e));
-    this.engine.on('trackUpdate', (e) => this.trigger('trackUpdate', e));
-    this.engine.on('rootChange', (e) => this.trigger('rootChange', e));
+    if (config?.startTime) {
+      this._updateTime(this.time);
+    }
+    this.engine = config?.engine;
+
+    if (this.engine) {
+      this._propagateEngine();
+    }
   }
 
   setDuration(dur: number): this {
     this.duration = dur;
-    this.engine.setDuration(dur);
+    this.engine?.setDuration(dur);
     return this;
   }
 
@@ -38,8 +39,8 @@ export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
     return this.duration;
   }
 
-  clear() {
-    this.engine.clearTracks();
+  clear(): void {
+    this.engine?.clearTracks();
   }
 
   play(): this {
@@ -61,12 +62,46 @@ export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
     return this;
   }
 
-  private _updateTime(t: number) {
-    this.time = t;
-    this.engine.setTime(t);
+  fromArray(array: TTrack[]) {
+    this.engine?.fromArray(array);
   }
 
-  update(dt: number) {
+  getTracks(): TTrack[] {
+    return this.engine?.getTracks() || [];
+  }
+
+  getTime(): number {
+    return this.time;
+  }
+
+  isRunning(): boolean {
+    return this.running;
+  }
+
+  setEngine(engine: AnimationEngine<TRoot, TTrack>): this {
+    this.engine = engine;
+    this._propagateEngine();
+
+    return this;
+  }
+
+  private _propagateEngine(): void {
+    if (!this.engine) return;
+    // Auto-propagate engine events
+    this.engine.on('timeUpdate', (e) => this.trigger('timeUpdate', e));
+    this.engine.on('durationChange', (e) => this.trigger('durationChange', e));
+    this.engine.on('trackAdd', (e) => this.trigger('trackAdd', e));
+    this.engine.on('trackRemove', (e) => this.trigger('trackRemove', e));
+    this.engine.on('trackUpdate', (e) => this.trigger('trackUpdate', e));
+    this.engine.on('rootChange', (e) => this.trigger('rootChange', e));
+  }
+
+  private _updateTime(t: number): void {
+    this.time = t;
+    this.engine?.setTime(t);
+  }
+
+  update(dt: number): void {
     if (!this.running) return;
     let time = this.time + dt;
 
@@ -78,18 +113,6 @@ export class AnimationPlayer<TRoot = any, TTrack = any> extends EventBus<
     }
 
     this._updateTime(time);
-  }
-
-  getTracks(): TTrack[] {
-    return this.engine.getTracks();
-  }
-
-  getTime() {
-    return this.time;
-  }
-
-  isRunning(): boolean {
-    return this.running;
   }
 
   setTime(t: number) {

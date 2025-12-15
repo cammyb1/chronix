@@ -16,8 +16,8 @@ import TimeLineUI from '../ui/TimeLineUI';
 import ControlsPlugin from '../ui/plugins/ControlsPlugin';
 import SubHeaderPlugin from '../ui/plugins/SubHeaderPlugin';
 import TracksPlugin from '../ui/plugins/TracksPlugin';
-import { ThreeAnimationEngine } from '../core/engines/ThreeAnimationEngine';
 import { AnimationPlayer } from '../core/AnimationPlayer';
+import EngineBuilder from '../core/EngineBuilder';
 
 export default {
   start() {
@@ -45,8 +45,7 @@ export default {
     light.position.y = 3;
     light.position.z = 15;
 
-    const engine = new ThreeAnimationEngine(box);
-    const timeline = new AnimationPlayer(engine);
+    const timeline = new AnimationPlayer().setEngine(EngineBuilder.create('three', box));
     const timeUI = new TimeLineUI({
       parent: timeline,
       plugins: [new ControlsPlugin(), new SubHeaderPlugin(), new TracksPlugin()],
@@ -62,7 +61,7 @@ export default {
       new FunctionKeyframeTrack('testingFn', [0.6, 2], ['cambiarColor:red', 'cambiarColor:white']),
     ];
 
-    engine.fromArray(tracks);
+    timeline.fromArray(tracks);
 
     document.body.appendChild(timeUI.dom);
 

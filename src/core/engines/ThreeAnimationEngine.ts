@@ -22,8 +22,18 @@ export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrac
     super.setRoot(r);
   }
 
-  fromArray(array: KeyframeTrack[]): void {
-    super.fromArray(array);
+  addTrack(track: KeyframeTrack): void {
+    super.addTrack(track);
+    this.refreshTracks();
+  }
+
+  removeTrack(track: KeyframeTrack): void {
+    super.removeTrack(track);
+    this.refreshTracks();
+  }
+
+  clearTracks(): void {
+    super.clearTracks();
     this.refreshTracks();
   }
 

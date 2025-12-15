@@ -1,8 +1,8 @@
 import type { AnimationPlayer } from '../../core/AnimationPlayer';
-import type ITimeUIPlugin from '../../core/types';
+import type TimeUIPlugin from '../../core/types';
 import { TracksUI } from '../components/TrackUI';
 
-export default class TracksPlugin implements ITimeUIPlugin {
+export default class TracksPlugin implements TimeUIPlugin {
   name = 'TracksPlugin';
   container: TracksUI;
   constructor() {
