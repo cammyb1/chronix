@@ -17,15 +17,15 @@ export class AnimationPlayer<TRoot = any, TTrack extends object = any> extends E
     super();
     this.duration = config?.duration || 1;
     this.loop = config?.loop || false;
-    this.time = config?.startTime || 0;
+    this.time = 0;
+
+    if (config?.engine) {
+      this.setEngine(config.engine);
+    }
 
     if (config?.startTime) {
-      this._updateTime(this.time);
-    }
-    this.engine = config?.engine;
-
-    if (this.engine) {
-      this._propagateEngine();
+      this.time = config.startTime;
+      this.seek(config.startTime);
     }
   }
 
@@ -90,6 +90,8 @@ export class AnimationPlayer<TRoot = any, TTrack extends object = any> extends E
 
   setEngine(engine: AnimationEngine<TRoot, TTrack>): this {
     this.engine = engine;
+    this.engine.setDuration(this.duration);
+    this.engine.setTime(this.time);
     this._propagateEngine();
 
     return this;

@@ -24,6 +24,9 @@ export default class TracksPlugin implements TimeUIPlugin {
   }
 
   onAttach(parent: AnimationPlayer): void {
+    this.container.setDuration(parent.getDuration());
+    this.container.timeContainer.rulerTick.setTime(parent.getTime());
+
     this.container.on('timeupdate', ({ time }) => {
       parent.seek(time);
     });

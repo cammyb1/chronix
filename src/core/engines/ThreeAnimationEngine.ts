@@ -9,7 +9,7 @@ export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrac
   constructor(r?: Object3D) {
     super(r || new Object3D());
     this.mixer = new AnimationMixerPlus(this.root);
-    this._action = this.mixer.clipAction(new AnimationClip('clip', -1, []));
+    this._action = this.mixer.clipAction(new AnimationClip('clip', this.duration, []));
   }
 
   setRoot(r: Object3D): void {
@@ -56,11 +56,9 @@ export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrac
       this.mixer.uncacheClip(this._action.getClip());
     }
     this._action = this.mixer.clipAction(
-      new AnimationClip('clip', -1, Array.from(this.tracks.values())),
+      new AnimationClip('clip', this.duration, Array.from(this.tracks.values())),
     );
-    const duration = this._action.getClip().duration;
     this._action.play();
-    this.setDuration(duration);
   }
 
   setTime(n: number) {

@@ -43,7 +43,7 @@ export default {
     light.position.z = 15;
 
     const engine = EngineBuilder.create('three', box);
-    const timeline = new AnimationPlayer().setEngine(engine);
+    const timeline = new AnimationPlayer({ duration: 2 }).setEngine(engine);
     const timeUI = new TimeLineUI()
       .addPlugin(new ControlsPlugin())
       .addPlugin(new TracksPlugin())
