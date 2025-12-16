@@ -45,10 +45,10 @@ export class TrackEventManager {
       const time = event.action.time;
       const dir = time <= 0 ? 0 : time - lastTime;
 
-      if (dir > 0 && lastTime < frameTime && frameTime <= time) {
-        this.trigger(event);
-      } else if (dir < 0 && lastTime > frameTime && frameTime >= time) {
-        this.trigger(event);
+      if (dir > 0) {
+        if (lastTime < frameTime && frameTime <= time) this.trigger(event);
+      } else if (dir < 0) {
+        if (lastTime > frameTime && frameTime >= time) this.trigger(event);
       }
 
       event.frame.lastTime = time;

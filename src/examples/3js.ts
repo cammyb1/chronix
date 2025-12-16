@@ -6,6 +6,7 @@ import {
   Mesh,
   MeshStandardMaterial,
   NumberKeyframeTrack,
+  StringKeyframeTrack,
 } from 'three';
 import { mount } from '../core/utils/three';
 import { FunctionKeyframeTrack } from '../core/three/FunctionKeyframeTrack';
@@ -21,11 +22,12 @@ export default {
     const app = document.getElementById('app') as HTMLElement;
 
     class Box extends Mesh<BoxGeometry, MeshStandardMaterial> {
+      testingString: string = 'Hola';
       constructor() {
         super(new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color: 'white' }));
       }
       cambiarColor(color: string) {
-        console.log(color);
+        console.log(this.testingString, color);
       }
     }
 
@@ -55,7 +57,8 @@ export default {
       new NumberKeyframeTrack('.position[y]', [0, 1, 2], [0, 2, 0]),
       new NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0.25, 1]),
       new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
-      new FunctionKeyframeTrack('testingFn', [0.6, 2], ['cambiarColor:red', 'cambiarColor:white']),
+      new StringKeyframeTrack('.testingString', [0.6, 2], ['Cambio', 'Hola']),
+      new FunctionKeyframeTrack('testFn', [0.6, 1.9], ['cambiarColor', 'cambiarColor']),
     ];
 
     timeline.fromArray(tracks);

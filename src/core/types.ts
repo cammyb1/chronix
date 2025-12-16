@@ -27,6 +27,7 @@ export interface IThreeExampleEvents {
 export interface AnimationPlayerConfig {
   duration?: number;
   loop?: boolean;
+  autoStart?: boolean;
   timeScale?: number;
   startTime?: number;
   engine?: AnimationEngine<any, any>;

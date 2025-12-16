@@ -19,6 +19,10 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
     this.loop = config?.loop || false;
     this.time = 0;
 
+    if (config.autoStart) {
+      this.play();
+    }
+
     if (config?.engine) {
       this.setEngine(config.engine);
     }
