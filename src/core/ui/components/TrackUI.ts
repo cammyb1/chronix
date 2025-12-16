@@ -23,7 +23,7 @@ export default class TracksUI extends DivElement<{ timeupdate: { time: number } 
 
     this.addClass('track-body');
 
-    const onScroll = (e: { target: HTMLElement } | Event) => {
+    const onScroll = (e: { target: HTMLElement }) => {
       const target = e.target as HTMLElement;
       if (target === this.timeContainer.tracksContainer.dom) {
         this.sideContainer.content.dom.scrollTop = target.scrollTop;
@@ -36,7 +36,7 @@ export default class TracksUI extends DivElement<{ timeupdate: { time: number } 
       this.trigger('timeupdate', { time });
     });
     this.timeContainer.on('scroll', onScroll);
-    this.sideContainer.content.dom.addEventListener('scroll', onScroll);
+    this.sideContainer.on('scroll', onScroll);
 
     // Scrollable content
     this.add(this.sideContainer);
