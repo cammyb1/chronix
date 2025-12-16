@@ -1,22 +1,13 @@
 {
-  "name": "khrono-master",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "chronix-project",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "start:core": "bun run --filter ./packages/core dev"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
     "vite": "npm:rolldown-vite@7.1.14"
-  },
-  "overrides": {
-    "vite": "npm:rolldown-vite@7.1.14"
-  },
-  "dependencies": {
-    "@types/three": "0.181.0",
-    "three": "0.181.0"
   }
 }
