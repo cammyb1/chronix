@@ -3,6 +3,10 @@ import type { AnimationPlayer } from './AnimationPlayer';
 import type { UIElement } from './ui/components/BaseUI';
 import type { AnimationEngine } from './engines/AnimationEngine';
 
+export type ChangeEvent<T extends EventTarget = HTMLElement> = {
+  target: T;
+};
+
 export interface IThreeExampleEvents {
   resize: {};
   tick: { dt: number; elapsed: number };

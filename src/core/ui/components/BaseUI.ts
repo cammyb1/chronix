@@ -1,3 +1,4 @@
+import type { ChangeEvent } from '@core/types';
 import { EventBus } from '../../EventBus';
 
 export class UIElement<
@@ -79,10 +80,6 @@ export class ButtonElement extends UIElement<{ click: null }, HTMLButtonElement>
     });
   }
 }
-
-export type ChangeEvent<T extends EventTarget = HTMLElement> = {
-  target: T;
-};
 
 export class InputElement extends UIElement<
   { change: ChangeEvent<HTMLInputElement> },

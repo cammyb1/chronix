@@ -1,4 +1,4 @@
-import type { IRulerEvent } from '../../types';
+import type { IRulerEvent } from '@core/types';
 import { DivElement } from './BaseUI';
 
 export default class PlayerRuler extends DivElement<IRulerEvent> {

@@ -1,6 +1,6 @@
 import type { AnimationPlayer } from '../../AnimationPlayer';
-import type TimeUIPlugin from '../../types';
-import { TrackControlsUI } from '../components/TrackUI';
+import type TimeUIPlugin from '@core/types';
+import { TrackControlsUI } from '../components/tracks/TrackControls';
 
 export default class ControlsPlugin implements TimeUIPlugin {
   name = 'ControlPlugin';

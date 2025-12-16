@@ -19,7 +19,17 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@core/*": ["src/core/*"],
+      "@ui/*": ["src/core/ui/*"],
+      "@engines/*": ["src/core/engines/*"],
+      "@three/*": ["src/core/three/*"],
+      "@utils/*": ["src/core/utils/*"]
+    }
   },
   "include": ["src"]
 }
