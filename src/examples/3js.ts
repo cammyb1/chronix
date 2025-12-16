@@ -44,10 +44,9 @@ export default {
 
     const engine = EngineBuilder.create('three', box);
     const timeline = new AnimationPlayer({ duration: 2 }).setEngine(engine);
-    const timeUI = new TimeLineUI()
-      .addPlugin(new ControlsPlugin())
-      .addPlugin(new TracksPlugin())
-      .setParent(timeline);
+    const timeUI = new TimeLineUI({
+      plugins: [new ControlsPlugin(), new TracksPlugin()],
+    }).setParent(timeline);
 
     webgl.scene.add(new DirectionalLightHelper(light));
 

@@ -97,6 +97,10 @@ export class AnimationPlayer<TRoot = any, TTrack extends object = any> extends E
     return this;
   }
 
+  getEngine(): AnimationEngine<TRoot, TTrack> | undefined {
+    return this.engine;
+  }
+
   private _updateTime(t: number): void {
     this.time = t;
     this.engine?.setTime(t);

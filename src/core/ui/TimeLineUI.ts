@@ -18,10 +18,6 @@ export default class TimeLineUI extends DivElement {
     this.addClass('timeline-container');
     this.setParent(parent);
 
-    if (plugins) {
-      plugins.forEach((plugin) => this.addPlugin(plugin));
-    }
-
     this._observer = new MutationObserver((mutations) => {
       this.plugins.forEach((plugin) => {
         const targetAdded = mutations.some((mutation) => {
@@ -43,6 +39,10 @@ export default class TimeLineUI extends DivElement {
     });
 
     this._observer.observe(this.dom, { childList: true });
+
+    if (plugins) {
+      plugins.forEach((plugin) => this.addPlugin(plugin));
+    }
   }
 
   setParent(p: AnimationPlayer | undefined): this {
