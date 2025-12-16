@@ -1,9 +1,10 @@
 import type { AnimationAction, Object3D } from 'three';
 import type { FunctionKeyframeTrack } from './FunctionKeyframeTrack';
-import { generateEventTracks, type AnimationEvent } from '../utils/track.utils';
+import { generateEventTracks } from '../utils/track.utils';
+import type { IAnimationEvent } from '../types';
 
 export class TrackEventManager {
-  private events: AnimationEvent[] = [];
+  private events: IAnimationEvent[] = [];
 
   registerTracks(tracks: FunctionKeyframeTrack[], action: AnimationAction) {
     const _events = generateEventTracks(tracks, action);
@@ -12,7 +13,7 @@ export class TrackEventManager {
     }
   }
 
-  trigger(event: AnimationEvent) {
+  trigger(event: IAnimationEvent) {
     const { name, action, args } = event;
 
     const root: Object3D = action.getRoot();

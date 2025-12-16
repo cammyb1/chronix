@@ -1,9 +1,11 @@
 import type { AnimationEngine } from './engines/AnimationEngine';
 import { ThreeAnimationEngine } from './engines/ThreeAnimationEngine';
+import { VanillaAnimationEngine } from './engines/VanillaAnimationEngine';
 
 export default class EngineBuilder {
   static engineList: { [key: string]: new (...args: any[]) => AnimationEngine<any, any> } = {
     three: ThreeAnimationEngine,
+    vanilla: VanillaAnimationEngine,
   };
 
   static register(

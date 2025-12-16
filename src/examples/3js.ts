@@ -13,7 +13,7 @@ import { Time } from '../core/Time';
 import TimeLineUI from '../core/ui/TimeLineUI';
 import ControlsPlugin from '../core/ui/plugins/ControlsPlugin';
 import TracksPlugin from '../core/ui/plugins/TracksPlugin';
-import { AnimationPlayer } from '../core/AnimationPlayer';
+import AnimationPlayer from '../core/AnimationPlayer';
 import EngineBuilder from '../core/EngineBuilder';
 
 export default {
@@ -43,7 +43,7 @@ export default {
     light.position.z = 15;
 
     const engine = EngineBuilder.create('three', box);
-    const timeline = new AnimationPlayer({ duration: 2 }).setEngine(engine);
+    const timeline = new AnimationPlayer({ duration: 2, engine });
     const timeUI = new TimeLineUI({
       plugins: [new ControlsPlugin(), new TracksPlugin()],
     }).setParent(timeline);
@@ -65,6 +65,6 @@ export default {
     Time.on('loop', () => timeline.update(Time.delta));
 
     webgl.camera.lookAt(box.position);
-    webgl.camera.position.set(-2, 2, 15);
+    webgl.camera.position.set(0, 0, 20);
   },
 };

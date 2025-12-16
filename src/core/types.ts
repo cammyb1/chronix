@@ -1,7 +1,19 @@
 import type { AnimationAction } from 'three';
-import type { AnimationPlayer } from './AnimationPlayer';
+import type AnimationPlayer from './AnimationPlayer';
 import type { UIElement } from './ui/components/BaseUI';
 import type { AnimationEngine } from './engines/AnimationEngine';
+
+export interface VanillaTrack {
+  name: string;
+  times: ArrayLike<number>;
+  values: ArrayLike<string | number | boolean>;
+  interpolation?: Interpolation;
+}
+
+export enum Interpolation {
+  LINEAR = 0,
+  DISCRETE = 1,
+}
 
 export type ChangeEvent<T extends EventTarget = HTMLElement> = {
   target: T;
