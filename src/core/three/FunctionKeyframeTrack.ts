@@ -17,7 +17,7 @@ AnimationClip.parse = function (json: AnimationClipJSON): AnimationClip {
   const clip = oldParse.bind(this)(cloned);
 
   fnTracks.forEach((track) => {
-    clip.tracks.push(new FunctionKeyframeTrack(track.name, track.times, track.values as string[]));
+    clip.tracks.push(new FunctionKeyframeTrack(track.times, track.values as string[]));
   });
 
   clip.resetDuration();
@@ -26,8 +26,8 @@ AnimationClip.parse = function (json: AnimationClipJSON): AnimationClip {
 };
 
 export class FunctionKeyframeTrack extends StringKeyframeTrack {
-  constructor(name: string, times: ArrayLike<number>, values: ArrayLike<string>) {
-    super(name, times, values);
+  constructor(times: ArrayLike<number>, values: ArrayLike<string>) {
+    super(".", times, values);
   }
 }
 

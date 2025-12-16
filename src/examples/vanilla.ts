@@ -14,34 +14,50 @@ export default {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    const root = {
+      position: { x: 500, y: 500 },
+      name: 'Random',
+      textColor: 'white',
+      rotation: 0,
+      visible: false,
+    };
+
     const refreshScreen = function () {
       if (!ctx) return;
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
     };
 
-    const drawRect = function (position: { x: number; y: number }, deg: number = 0) {
+    const drawText = function (text: string, x: number, y: number) {
+      if (!ctx) return;
+      ctx.font = '48px calibri';
+      ctx.fillStyle = root.textColor;
+      ctx.fillText(text, x, y);
+    };
+
+    const drawRect = function () {
       if (!ctx) return;
       const width = 250;
       const height = 250;
+      const x = root.position.x + width / 2;
+      const y = root.position.y + height / 2;
+
       ctx.save();
+
+      const translatedX = (width / 2) * -1;
+      const translatedY = (height / 2) * -1;
+
+      ctx.translate(x, y);
+      ctx.rotate(root.rotation);
+      drawText(root.name, translatedX + 24, translatedY - 24);
       ctx.fillStyle = 'white';
-      ctx.translate(position.x + width / 2, position.y + height / 2);
-      ctx.rotate(deg);
-      ctx.fillRect((width / 2) * -1, (height / 2) * -1, width, height);
+      ctx.fillRect(translatedX, translatedY, width, height);
       ctx.restore();
     };
 
     app.appendChild(canvas);
 
-    const test = {
-      position: { x: 500, y: 500 },
-      name: 'Hola',
-      rotation: 0,
-      visible: false,
-    };
-
-    const engine = EngineBuilder.create('vanilla', test);
+    const engine = EngineBuilder.create('vanilla', root);
     const timeline = new AnimationPlayer({ duration: 2, engine });
     const timeUI = new TimeLineUI({
       plugins: [new ControlsPlugin(), new TracksPlugin()],
@@ -58,7 +74,8 @@ export default {
         times: [0, 1, 2],
         values: [0, Math.PI / 2, 0],
       },
-      { name: 'name', times: [1, 2], values: ['Pepito', 'Hola'] },
+      { name: 'name', times: [0, 1, 1.5], values: ['Jaimito', 'Pepito', 'Juan'] },
+      { name: 'textColor', times: [0, 1, 1.5], values: ['red', 'cyan', 'blue'] },
     ];
 
     timeline.fromArray(tracks);
@@ -70,7 +87,7 @@ export default {
 
     Time.on('loop', () => {
       refreshScreen();
-      drawRect(test.position, test.rotation);
+      drawRect();
       timeline.update(Time.delta);
     });
   },

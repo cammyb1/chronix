@@ -6,7 +6,6 @@ import {
   Mesh,
   MeshStandardMaterial,
   NumberKeyframeTrack,
-  StringKeyframeTrack,
 } from 'three';
 import { mount } from '../core/utils/three';
 import { FunctionKeyframeTrack } from '../core/three/FunctionKeyframeTrack';
@@ -22,12 +21,14 @@ export default {
     const app = document.getElementById('app') as HTMLElement;
 
     class Box extends Mesh<BoxGeometry, MeshStandardMaterial> {
-      testingString: string = 'Hola';
       constructor() {
         super(new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color: 'white' }));
       }
       cambiarColor(color: string) {
-        console.log(this.testingString, color);
+        this.material.color.set(color);
+      }
+      consolear() {
+        console.log('test console');
       }
     }
 
@@ -45,7 +46,7 @@ export default {
     light.position.z = 15;
 
     const engine = EngineBuilder.create('three', box);
-    const timeline = new AnimationPlayer({ duration: 2, engine });
+    const timeline = new AnimationPlayer({ duration: 2, engine, loop: true });
     const timeUI = new TimeLineUI({
       plugins: [new ControlsPlugin(), new TracksPlugin()],
     }).setParent(timeline);
@@ -55,10 +56,12 @@ export default {
     const tracks = [
       new NumberKeyframeTrack('.rotation[x]', [0, 1, 2], [0, Math.PI, 0]),
       new NumberKeyframeTrack('.position[y]', [0, 1, 2], [0, 2, 0]),
-      new NumberKeyframeTrack('.material.opacity', [0, 1, 2], [1, 0.25, 1]),
-      new BooleanKeyframeTrack('.material.transparent', [0, 1, 2], [true, true, true]),
-      new StringKeyframeTrack('.testingString', [0.6, 2], ['Cambio', 'Hola']),
-      new FunctionKeyframeTrack('testFn', [0.6, 1.9], ['cambiarColor', 'cambiarColor']),
+      new NumberKeyframeTrack('.material.opacity', [0, 0.5, 1, 1.5, 2], [1, 0, 1, 0, 1]),
+      new BooleanKeyframeTrack('.material.transparent', [0], [true]),
+      new FunctionKeyframeTrack(
+        [0.1, 0.5, 1, 1.5, 1.9],
+        ['cambiarColor:white', 'cambiarColor:red', '', 'cambiarColor:white', ''],
+      ),
     ];
 
     timeline.fromArray(tracks);
