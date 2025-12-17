@@ -1,5 +1,6 @@
 import { EventBus } from './EventBus';
-import type { AnimationEngine } from './engines/AnimationEngine';
+import { VanillaAnimationEngine } from './engines/VanillaAnimationEngine';
+import { AnimationEngine } from './engines/AnimationEngine';
 import type { AnimationPlayerConfig, IAnimationEvents } from './types';
 
 export default class AnimationPlayer<TRoot = any, TTrack extends object = any> extends EventBus<
@@ -10,6 +11,20 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
   time: number;
   duration: number;
   loop: boolean;
+
+  protected static engines: Map<string, new (...args: any[]) => AnimationEngine<any, any>> =
+    new Map();
+
+  static {
+    this.registerEngine('vanilla', VanillaAnimationEngine);
+  }
+
+  static registerEngine(
+    name: string,
+    engineClass: new (...args: any[]) => AnimationEngine<any, any>,
+  ) {
+    this.engines.set(name, engineClass);
+  }
 
   protected engine: AnimationEngine<TRoot, TTrack> | undefined;
 
@@ -23,8 +38,8 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
       this.play();
     }
 
-    if (config?.engine) {
-      this.setEngine(config.engine);
+    if (config?.engine && config?.root) {
+      this.setEngine(config.engine, config.root);
     }
 
     if (config?.startTime) {
@@ -92,8 +107,24 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
     return this.running;
   }
 
-  setEngine(engine: AnimationEngine<TRoot, TTrack>): this {
-    this.engine = engine;
+  setEngine(
+    engine: AnimationEngine<TRoot, TTrack> | string,
+    ...args: [r?: TRoot, ...rest: any]
+  ): this {
+    let intance;
+
+    if (typeof engine === 'string') {
+      const EngineClass = AnimationPlayer.engines.get(engine);
+      if (!EngineClass) {
+        throw new Error(`Engine ${engine} not found`);
+      }
+
+      intance = new EngineClass(...args);
+    } else {
+      intance = engine;
+    }
+
+    this.engine = intance;
     this.engine.setDuration(this.duration);
     this.engine.setTime(this.time);
     this._propagateEngine();

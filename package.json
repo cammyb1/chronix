@@ -4,7 +4,7 @@
     "packages/*"
   ],
   "scripts": {
-    "start:core": "bun run --filter ./packages/core dev"
+    "dev:core": "bun run --filter ./packages/core dev"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

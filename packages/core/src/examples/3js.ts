@@ -14,7 +14,9 @@ import TimeLineUI from '../core/ui/TimeLineUI';
 import ControlsPlugin from '../core/ui/plugins/ControlsPlugin';
 import TracksPlugin from '../core/ui/plugins/TracksPlugin';
 import AnimationPlayer from '../core/AnimationPlayer';
-import EngineBuilder from '../core/EngineBuilder';
+import { ThreeAnimationEngine } from '../core/engines/ThreeAnimationEngine';
+
+AnimationPlayer.registerEngine('three', ThreeAnimationEngine);
 
 export default {
   start() {
@@ -45,8 +47,7 @@ export default {
     light.position.y = 3;
     light.position.z = 15;
 
-    const engine = EngineBuilder.create('three', box);
-    const timeline = new AnimationPlayer({ duration: 2, engine, loop: true });
+    const timeline = new AnimationPlayer({ duration: 2, loop: true }).setEngine('three', box);
     const timeUI = new TimeLineUI({
       plugins: [new ControlsPlugin(), new TracksPlugin()],
     }).setParent(timeline);

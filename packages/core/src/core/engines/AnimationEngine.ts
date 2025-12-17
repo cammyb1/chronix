@@ -1,7 +1,7 @@
 import { EventBus } from '../EventBus';
 import type { IAnimationEvents, ITrackManager } from '../types';
 
-export class AnimationEngine<IRoot, ITrack extends object>
+export class AnimationEngine<IRoot = any, ITrack extends object = any>
   extends EventBus<IAnimationEvents<IRoot, ITrack>>
   implements ITrackManager
 {

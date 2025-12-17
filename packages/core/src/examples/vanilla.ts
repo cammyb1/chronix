@@ -1,5 +1,4 @@
 import AnimationPlayer from '../core/AnimationPlayer';
-import EngineBuilder from '../core/EngineBuilder';
 import { Time } from '../core/Time';
 import ControlsPlugin from '../core/ui/plugins/ControlsPlugin';
 import TracksPlugin from '../core/ui/plugins/TracksPlugin';
@@ -57,8 +56,7 @@ export default {
 
     app.appendChild(canvas);
 
-    const engine = EngineBuilder.create('vanilla', root);
-    const timeline = new AnimationPlayer({ duration: 2, engine });
+    const timeline = new AnimationPlayer({ duration: 2 }).setEngine('vanilla', root);
     const timeUI = new TimeLineUI({
       plugins: [new ControlsPlugin(), new TracksPlugin()],
     }).setParent(timeline);

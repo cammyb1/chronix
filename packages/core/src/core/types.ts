@@ -30,7 +30,8 @@ export interface AnimationPlayerConfig {
   autoStart?: boolean;
   timeScale?: number;
   startTime?: number;
-  engine?: AnimationEngine<any, any>;
+  engine?: AnimationEngine<any, any> | string;
+  root?: any
 }
 
 export interface ITrackManager {
