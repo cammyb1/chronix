@@ -1,7 +1,7 @@
-import { Interpolation, type VanillaTrack } from '../types';
+import { Interpolation, type Track } from '../types';
 import { AnimationEngine } from './AnimationEngine';
 
-export class VanillaAnimationEngine extends AnimationEngine<{}, VanillaTrack> {
+export class VanillaAnimationEngine extends AnimationEngine<{}, Track> {
   setTime(t: number) {
     if (!this.root) return;
 
@@ -21,7 +21,7 @@ export class VanillaAnimationEngine extends AnimationEngine<{}, VanillaTrack> {
     return max;
   }
 
-  private getValueAtTime(track: VanillaTrack, time: number): any {
+  private getValueAtTime(track: Track, time: number): any {
     const times = track.times;
     const values = track.values;
 

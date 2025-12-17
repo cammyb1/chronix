@@ -3,7 +3,7 @@ import type AnimationPlayer from './AnimationPlayer';
 import type { UIElement } from './ui/components/BaseUI';
 import type { AnimationEngine } from './engines/AnimationEngine';
 
-export interface VanillaTrack {
+export interface Track {
   name: string;
   times: ArrayLike<number>;
   values: ArrayLike<string | number | boolean>;

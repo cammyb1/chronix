@@ -1,4 +1,4 @@
-import type { AnimationPlayer } from '../../AnimationPlayer';
+import AnimationPlayer from '../../AnimationPlayer';
 import type TimeUIPlugin from '@core/types';
 import { TrackControlsUI } from '../components/tracks/TrackControls';
 

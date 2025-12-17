@@ -1,7 +1,7 @@
 import { EventBus } from '../EventBus';
-import type { IAnimationEvents, ITrackManager } from '../types';
+import type { IAnimationEvents, ITrackManager, Track } from '../types';
 
-export class AnimationEngine<IRoot = any, ITrack extends object = any>
+export class AnimationEngine<IRoot = any, ITrack extends object = Track>
   extends EventBus<IAnimationEvents<IRoot, ITrack>>
   implements ITrackManager
 {
@@ -22,12 +22,6 @@ export class AnimationEngine<IRoot = any, ITrack extends object = any>
 
   getTracks(): ITrack[] {
     return Array.from(this.tracks.values());
-  }
-
-  fromArray(array: ITrack[]): void {
-    array.forEach((track) => {
-      this.addTrack(track);
-    });
   }
 
   clearTracks(): void {
@@ -60,6 +54,13 @@ export class AnimationEngine<IRoot = any, ITrack extends object = any>
     if (!this.tracks[index]) return;
     this.tracks.splice(index, 1, track);
     this.trigger('trackUpdated', { track });
+  }
+
+  fromArray(array: ITrack[]): void {
+    if (this.tracks.length > 0) {
+      this.clearTracks();
+    }
+    array.forEach((track) => this.addTrack(track));
   }
 
   addTrack(track: ITrack): void {

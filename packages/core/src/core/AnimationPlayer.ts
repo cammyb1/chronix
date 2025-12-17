@@ -91,12 +91,20 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
     return this;
   }
 
-  fromArray(array: TTrack[]) {
-    this.engine?.fromArray(array);
+  tracks(): TTrack[] {
+    return this.engine?.getTracks() || [];
   }
 
-  getTracks(): TTrack[] {
-    return this.engine?.getTracks() || [];
+  add(track: TTrack) {
+    this.engine?.addTrack(track);
+  }
+
+  remove(track: TTrack) {
+    this.engine?.removeTrack(track);
+  }
+
+  fromArray(array: TTrack[]) {
+    this.engine?.fromArray(array);
   }
 
   getTime(): number {

@@ -7,8 +7,8 @@ import {
   MeshStandardMaterial,
   NumberKeyframeTrack,
 } from 'three';
-import { mount } from '../core/utils/three';
-import { FunctionKeyframeTrack } from '../core/three/FunctionKeyframeTrack';
+import { mount } from '../three/utils';
+import { FunctionKeyframeTrack } from '../three/FunctionKeyframeTrack';
 import { Time } from '../core/Time';
 import TimeLineUI from '../core/ui/TimeLineUI';
 import ControlsPlugin from '../core/ui/plugins/ControlsPlugin';
