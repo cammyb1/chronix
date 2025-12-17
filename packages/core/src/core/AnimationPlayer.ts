@@ -1,6 +1,6 @@
 import { EventBus } from './EventBus';
 import { VanillaAnimationEngine } from './engines/VanillaAnimationEngine';
-import { AnimationEngine } from './engines/AnimationEngine';
+import { AnimationEngine } from './AnimationEngine';
 import type { AnimationPlayerConfig, IAnimationEvents } from './types';
 
 export default class AnimationPlayer<TRoot = any, TTrack extends object = any> extends EventBus<
@@ -38,8 +38,10 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
       this.play();
     }
 
-    if (config?.engine && config?.root) {
+    if (config?.engine) {
       this.setEngine(config.engine, config.root);
+    } else {
+      this.setEngine('vanilla', config.root);
     }
 
     if (config?.startTime) {

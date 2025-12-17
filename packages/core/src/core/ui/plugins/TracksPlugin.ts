@@ -1,10 +1,13 @@
-import AnimationPlayer from '../../AnimationPlayer';
-import type TimeUIPlugin from '../../types';
+import type { AnimationEngine } from '@core/AnimationEngine';
+import AnimationPlayer from '@core/AnimationPlayer';
+import type { TrackLike } from '@core/types';
+import type TimeUIPlugin from '@core/types';
 import TracksUI from '../components/TrackUI';
 
 export default class TracksPlugin implements TimeUIPlugin {
   name = 'TracksPlugin';
   container: TracksUI;
+
   constructor() {
     this.container = new TracksUI();
   }
@@ -18,8 +21,8 @@ export default class TracksPlugin implements TimeUIPlugin {
     this.container.clear();
     this.container.setDuration(parent.getDuration());
 
-    parent.tracks().forEach((track) => {
-      this.container.fromTrack(track);
+    parent.tracks().forEach((track, index) => {
+      this.container.fromTrack(index, track);
     });
   }
 
@@ -29,6 +32,16 @@ export default class TracksPlugin implements TimeUIPlugin {
 
     this.container.on('timeupdate', ({ time }) => {
       parent.seek(time);
+    });
+
+    this.container.on('trackUpdated', (event: any) => {
+      const engine: AnimationEngine | undefined = parent.getEngine();
+      const track: TrackLike = parent.tracks()[event.tPos];
+      if (track) {
+        track.times[event.kPos] = event.value;
+      }
+
+      engine?.updateTrack(event.tPos, track);
     });
 
     parent.on('timeUpdate', ({ time }) => {

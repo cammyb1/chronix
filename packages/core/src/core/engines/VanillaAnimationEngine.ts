@@ -1,7 +1,7 @@
-import { Interpolation, type Track } from '../types';
-import { AnimationEngine } from './AnimationEngine';
+import { Interpolation, type TrackLike } from '../types';
+import { AnimationEngine } from '../AnimationEngine';
 
-export class VanillaAnimationEngine extends AnimationEngine<{}, Track> {
+export class VanillaAnimationEngine extends AnimationEngine<{}, TrackLike> {
   setTime(t: number) {
     if (!this.root) return;
 
@@ -21,7 +21,7 @@ export class VanillaAnimationEngine extends AnimationEngine<{}, Track> {
     return max;
   }
 
-  private getValueAtTime(track: Track, time: number): any {
+  private getValueAtTime(track: TrackLike, time: number): any {
     const times = track.times;
     const values = track.values;
 
@@ -56,7 +56,7 @@ export class VanillaAnimationEngine extends AnimationEngine<{}, Track> {
   }
 
   private applyValue(target: any, property: string, value: any) {
-    const parts = property.split('.');
+    const parts = property.split('.').filter((s) => s);
     let current = target;
 
     for (let i = 0; i < parts.length - 1; i++) {

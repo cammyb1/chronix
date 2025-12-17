@@ -1,9 +1,10 @@
-import type { KeyframeTrack } from 'three';
 import { DivElement } from './BaseUI';
 import { TrackSideContainer } from './tracks/TrackSideContainer';
 import { TrackTimeContainer } from './tracks/TrackTimeContainer';
-import { KeyframeUI } from './tracks/Keyframe';
+import { KeyframeUI } from './tracks/KeyframeUI';
 import { PropertyUI } from './tracks/Property';
+import KeyframeContainer from './tracks/KeyframeContainer';
+import type { TrackLike } from '@/core/types';
 
 export default class TracksUI extends DivElement<{ timeupdate: { time: number } }> {
   sideContainer: TrackSideContainer;
@@ -46,7 +47,9 @@ export default class TracksUI extends DivElement<{ timeupdate: { time: number } 
   setDuration(v: number) {
     this.duration = v;
     this.timeContainer.setDuration(v);
-    this.refreshTracks();
+    this.tracks.forEach((track) => {
+      track.frame.setDuration(v);
+    });
   }
 
   override clear(): this {
@@ -56,27 +59,19 @@ export default class TracksUI extends DivElement<{ timeupdate: { time: number } 
     return this;
   }
 
-  refreshTracks() {
-    this.tracks.forEach((track) => {
-      track.frame.updatePosition(track.frame.value, this.duration);
-    });
-  }
-
-  fromTrack(track: KeyframeTrack) {
+  fromTrack(tPos: number, track: TrackLike) {
     const kProperty = new PropertyUI(track.name);
     this.sideContainer.content.add(kProperty);
 
-    const kcontainer = new DivElement().addClass('keyframe-container');
-    const inner = new DivElement().addClass('track-inner-wrapper');
+    const container = new KeyframeContainer();
 
-    track.times.forEach((t) => {
+    track.times.forEach((t, kPos) => {
       const kFrames = new KeyframeUI(t, this.duration);
       this.tracks.push({ name: kProperty, frame: kFrames });
-      inner.add(kFrames);
+      kFrames.on('dragEnd', (ev: any) => this.trigger('trackUpdated', { tPos: tPos, kPos, ...ev }));
+      container.add(kFrames);
     });
 
-    kcontainer.add(inner);
-
-    this.timeContainer.tracksContainer.add(kcontainer);
+    this.timeContainer.tracksContainer.add(container);
   }
 }

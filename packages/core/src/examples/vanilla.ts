@@ -63,17 +63,17 @@ export default {
 
     const tracks = [
       {
-        name: 'position.x',
+        name: '.position.x',
         times: [0, 1, 2],
         values: [500, 700, 500],
       },
       {
-        name: 'rotation',
+        name: '.rotation',
         times: [0, 1, 2],
         values: [0, Math.PI / 2, 0],
       },
-      { name: 'name', times: [0, 1, 1.5], values: ['Jaimito', 'Pepito', 'Juan'] },
-      { name: 'textColor', times: [0, 1, 1.5], values: ['red', 'cyan', 'blue'] },
+      { name: '.name', times: [0, 1, 1.5], values: ['Jaimito', 'Pepito', 'Juan'] },
+      { name: '.textColor', times: [0, 1, 1.5], values: ['red', 'cyan', 'blue'] },
     ];
 
     timeline.fromArray(tracks);

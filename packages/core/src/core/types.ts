@@ -1,14 +1,16 @@
 import type { AnimationAction } from 'three';
 import type AnimationPlayer from './AnimationPlayer';
 import type { UIElement } from './ui/components/BaseUI';
-import type { AnimationEngine } from './engines/AnimationEngine';
+import type { AnimationEngine } from './AnimationEngine';
 
-export interface Track {
+export interface TrackLike {
   name: string;
-  times: ArrayLike<number>;
-  values: ArrayLike<string | number | boolean>;
+  times: number[];
+  values: TypedValue[];
   interpolation?: Interpolation;
 }
+
+export type TypedValue = string | number | boolean;
 
 export enum Interpolation {
   LINEAR = 0,
@@ -31,7 +33,7 @@ export interface AnimationPlayerConfig {
   timeScale?: number;
   startTime?: number;
   engine?: AnimationEngine<any, any> | string;
-  root?: any
+  root: any
 }
 
 export interface ITrackManager {
