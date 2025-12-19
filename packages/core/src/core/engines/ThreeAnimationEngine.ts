@@ -1,15 +1,29 @@
 import { AnimationAction, AnimationClip, KeyframeTrack, Object3D } from 'three';
 import { AnimationEngine } from '../AnimationEngine';
 import { AnimationMixerPlus } from '../../three/AnimationMixerPlus';
+import type { IClip } from '../types';
 
 export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrack> {
   protected mixer: AnimationMixerPlus;
-  private _action: AnimationAction;
+  private clipMap: { [k: string]: AnimationClip };
+  private _actions: Map<string, AnimationAction[]>;
 
   constructor(r?: Object3D) {
     super(r || new Object3D());
     this.mixer = new AnimationMixerPlus(this.root);
-    this._action = this.mixer.clipAction(new AnimationClip('clip', this.duration, []));
+    this.clipMap = {};
+    this._actions = new Map();
+  }
+
+  createClip(name: string, array?: KeyframeTrack[]): IClip<KeyframeTrack> {
+    const clip = new AnimationClip(name, -1, array || []);
+    this.clipMap[clip.uuid] = clip;
+
+    if (!this._actions.get(clip.uuid)) {
+      this._actions.set(clip.uuid, [this.mixer.clipAction(clip)]);
+    }
+
+    return super.createClip(name, array);
   }
 
   setRoot(r: Object3D): void {
@@ -22,54 +36,12 @@ export class ThreeAnimationEngine extends AnimationEngine<Object3D, KeyframeTrac
     super.setRoot(r);
   }
 
-  addTrack(track: KeyframeTrack): void {
-    super.addTrack(track);
-    this.refreshTracks();
-  }
-
-  removeTrack(track: KeyframeTrack): void {
-    super.removeTrack(track);
-    this.refreshTracks();
-  }
-
-  updateTrack(index: number, track: KeyframeTrack): void {
-    super.updateTrack(index, track);
-    this.refreshTracks();
-  }
-
-  clearTracks(): void {
-    super.clearTracks();
-    this.refreshTracks();
-  }
-
-  getAction(): AnimationAction {
-    return this._action;
-  }
-
   getMixer(): AnimationMixerPlus {
     return this.mixer;
-  }
-
-  refreshTracks() {
-    if (this._action) {
-      this.mixer.uncacheAction(this._action.getClip());
-      this.mixer.uncacheClip(this._action.getClip());
-    }
-    this._action = this.mixer.clipAction(
-      new AnimationClip('clip', this.duration, Array.from(this.tracks.values())),
-    );
-    this._action.play();
   }
 
   setTime(n: number) {
     this.mixer.setTime(n);
     super.setTime(n);
-  }
-
-  setDuration(dur: number): void {
-    const clip = this._action.getClip();
-    clip.duration = dur;
-    this._action.setDuration(dur);
-    super.setDuration(dur);
   }
 }

@@ -2,12 +2,20 @@ import type { AnimationAction } from 'three';
 import type AnimationPlayer from './AnimationPlayer';
 import type { UIElement } from './ui/components/BaseUI';
 import type { AnimationEngine } from './AnimationEngine';
+import type TrackManager from './TrackManager';
 
 export interface TrackLike {
   name: string;
-  times: number[];
-  values: TypedValue[];
+  times: ArrayLike<number>;
+  values: ArrayLike<TypedValue>;
   interpolation?: Interpolation;
+}
+
+export interface IClip<ITrack extends TrackLike = TrackLike> {
+  id?: string;
+  name: string;
+  duration: number;
+  tracks: TrackManager<ITrack>;
 }
 
 export type TypedValue = string | number | boolean;
@@ -33,22 +41,17 @@ export interface AnimationPlayerConfig {
   timeScale?: number;
   startTime?: number;
   engine?: AnimationEngine<any, any> | string;
-  root: any
+  root: any;
 }
 
-export interface ITrackManager {
-  addTrack(track: object): void;
-  updateTrack(index: number, track: object): void;
-  removeTrack(track: object): void;
-  getTracksByName(name: string): object[];
-  getTracksByProperty<K extends string>(key: K, value: any): object[];
-  filterTracks(predicate: (track: object) => boolean): object[];
-  hasTrack(track: object): boolean;
-  getTracks(): object[];
-  clearTracks(): void;
+export interface ITrackEvents {
+  // Track events
+  trackAdded: { track: TrackLike & any };
+  trackRemoved: { track: TrackLike & any };
+  trackUpdated: { track: TrackLike & any };
 }
 
-export interface IAnimationEvents<IRoot, ITrack> {
+export interface IAnimationEvents<IRoot, ITrack extends TrackLike = TrackLike> {
   // Playback events
   play: null;
   pause: null;
@@ -60,10 +63,10 @@ export interface IAnimationEvents<IRoot, ITrack> {
   // Duration events
   durationChange: { duration: number };
 
-  // Track events
-  trackAdd: { track: ITrack };
-  trackRemove: { track: ITrack };
-  trackUpdate: { track: ITrack };
+  // Clip events
+  clipAdded: { clip: IClip<ITrack> };
+  clipRemoved: { clip: IClip<ITrack> };
+  clipUpdated: { clip: IClip<ITrack> };
 
   // Root events
   rootChange: { root: IRoot };

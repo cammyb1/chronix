@@ -1,18 +1,76 @@
 import { EventBus } from './EventBus';
-import type { IAnimationEvents, ITrackManager, TrackLike } from './types';
+import TrackManager from './TrackManager';
+import type { IAnimationEvents, IClip, TrackLike } from './types';
 
-export class AnimationEngine<IRoot = any, ITrack extends object = TrackLike>
-  extends EventBus<IAnimationEvents<IRoot, ITrack>>
-  implements ITrackManager
-{
+export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> extends EventBus<
+  IAnimationEvents<IRoot, ITrack>
+> {
   root: IRoot;
-  tracks: ITrack[];
-  duration: number = 1;
+  protected clips: IClip<ITrack>[];
 
   constructor(r?: IRoot) {
     super();
     this.root = r || ({} as IRoot);
-    this.tracks = [];
+    this.clips = [];
+  }
+
+  createClip(name: string, array?: ITrack[]): IClip<ITrack> {
+    const duration =
+      array?.reduce((acc, current) => {
+        acc = Math.max(acc, current.times[current.times.length - 1]);
+        return acc;
+      }, 0) || 1;
+
+    const id = window.crypto.randomUUID();
+    const clip: IClip<ITrack> = { id, name, duration, tracks: new TrackManager(array) };
+    this.clips.push(clip);
+    this.trigger('clipAdded', { clip });
+    return clip;
+  }
+
+  updateClip(id: string, clip: Partial<IClip>): IClip<ITrack> | undefined {
+    const index = this.clips.findIndex((c) => c.id === id);
+    const existingClip = this.clips[index];
+    if (existingClip) {
+      const updatedClip = { ...existingClip, ...clip } as IClip<ITrack>;
+      this.clips.splice(index, 1, updatedClip);
+      this.trigger('clipUpdated', { clip: updatedClip });
+      return updatedClip;
+    }
+    return undefined;
+  }
+
+  removeClip(id: string): IClip<ITrack> | undefined {
+    const index = this.clips.findIndex((c) => c.id === id);
+    if (index >= 0) {
+      const clip: IClip<ITrack> = this.clips.splice(index, 1)[0];
+      this.trigger('clipRemoved', { clip });
+    }
+    return undefined;
+  }
+
+  filterClips(
+    predicate: (clip: IClip<ITrack>, index: number, array: IClip<ITrack>[]) => boolean,
+  ): IClip<ITrack>[] {
+    return this.clips.filter(predicate);
+  }
+
+  filterClipsByProperty<K extends string>(property: K, value: any) {
+    return this.filterClips((c: IClip<ITrack>) => property in c && (c as any)[property] === value);
+  }
+
+  findClipById(id: string): IClip<ITrack> | undefined {
+    return this.filterClipsByProperty('id', id)[0];
+  }
+
+  findClip(
+    predicate: (clip: IClip<ITrack>, index: number, array: IClip<ITrack>[]) => boolean,
+  ): IClip<ITrack> | undefined {
+    return this.clips.find(predicate);
+  }
+
+  findClipByName(name: string): IClip<ITrack> | undefined {
+    return this.filterClipsByProperty('name', name)[0];
   }
 
   setRoot(r: IRoot): void {
@@ -20,70 +78,7 @@ export class AnimationEngine<IRoot = any, ITrack extends object = TrackLike>
     this.trigger('rootChange', { root: r });
   }
 
-  getTracks(): ITrack[] {
-    return Array.from(this.tracks.values());
-  }
-
-  clearTracks(): void {
-    this.tracks.forEach((t) => this.removeTrack(t));
-  }
-
-  getTracksByName(name: string): ITrack[] {
-    return this.getTracksByProperty('name', name);
-  }
-
-  getTracksByProperty<K extends string>(key: K, value: any): ITrack[] {
-    return this.filterTracks((track: ITrack) => {
-      return key in track && (track as any)[key] === value;
-    });
-  }
-
-  filterTracks(preditacte: (track: ITrack) => boolean): ITrack[] {
-    return this.tracks.filter(preditacte);
-  }
-
-  hasTrack(track: ITrack): boolean {
-    return this.findTrackIndex(track) >= 0;
-  }
-
-  private findTrackIndex(track: ITrack): number {
-    return this.tracks.findIndex((t) => t === track);
-  }
-
-  updateTrack(index: number, track: ITrack): void {
-    if (!this.tracks[index]) return;
-    this.tracks.splice(index, 1, track);
-    this.trigger('trackUpdated', { track });
-  }
-
-  fromArray(array: ITrack[]): void {
-    if (this.tracks.length > 0) {
-      this.clearTracks();
-    }
-    array.forEach((track) => this.addTrack(track));
-  }
-
-  addTrack(track: ITrack): void {
-    if (this.hasTrack(track)) return;
-    this.tracks.push(track);
-    this.trigger('trackAdd', { track });
-  }
-
-  removeTrack(track: ITrack): void {
-    const existingIndex = this.findTrackIndex(track);
-    if (existingIndex < 0) return;
-    this.tracks.splice(existingIndex, 1);
-    this.trigger('trackRemove', { track });
-  }
-
   setTime(n: number): void {
     this.trigger('timeUpdate', { time: n });
-  }
-  setDuration(n: number): void {
-    this.duration = n;
-    this.trigger('durationChange', { duration: n });
-  }
-  getDuration(): number {
-    return this.duration;
   }
 }
