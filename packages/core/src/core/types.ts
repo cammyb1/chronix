@@ -2,20 +2,19 @@ import type { AnimationAction } from 'three';
 import type AnimationPlayer from './AnimationPlayer';
 import type { UIElement } from './ui/components/BaseUI';
 import type { AnimationEngine } from './AnimationEngine';
-import type TrackManager from './TrackManager';
+import type Clip from './Clip';
 
 export interface TrackLike {
   name: string;
-  times: ArrayLike<number>;
+  times: ArrayLike<number> | Float32Array;
   values: ArrayLike<TypedValue>;
   interpolation?: Interpolation;
 }
 
-export interface IClip<ITrack extends TrackLike = TrackLike> {
-  id?: string;
-  name: string;
+export interface ClipConfig<ITrack> {
   duration: number;
-  tracks: TrackManager<ITrack>;
+  name: string;
+  tracks?: ITrack[];
 }
 
 export type TypedValue = string | number | boolean;
@@ -44,11 +43,11 @@ export interface AnimationPlayerConfig {
   root: any;
 }
 
-export interface ITrackEvents {
+export interface ITrackEvents<Track extends TrackLike = TrackLike> {
   // Track events
-  trackAdded: { track: TrackLike & any };
-  trackRemoved: { track: TrackLike & any };
-  trackUpdated: { track: TrackLike & any };
+  trackAdded: { track: Track; clip: Clip<Track> };
+  trackRemoved: { track: Track; clip: Clip<Track> };
+  trackUpdated: { track: Track; clip: Clip<Track> };
 }
 
 export interface IAnimationEvents<IRoot, ITrack extends TrackLike = TrackLike> {
@@ -64,9 +63,10 @@ export interface IAnimationEvents<IRoot, ITrack extends TrackLike = TrackLike> {
   durationChange: { duration: number };
 
   // Clip events
-  clipAdded: { clip: IClip<ITrack> };
-  clipRemoved: { clip: IClip<ITrack> };
-  clipUpdated: { clip: IClip<ITrack> };
+  switchActive: { clip: Clip<ITrack>; oldClip: Clip<ITrack> | undefined };
+  clipAdded: { clip: Clip<ITrack> };
+  clipRemoved: { clip: Clip<ITrack> };
+  clipUpdated: { clip: Clip<ITrack> };
 
   // Root events
   rootChange: { root: IRoot };

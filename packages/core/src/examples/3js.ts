@@ -65,7 +65,10 @@ export default {
       ),
     ];
 
-    timeline.fromArray(tracks);
+    const clip = timeline.createClip('test', tracks);
+    if (clip) {
+      timeline.getEngine()?.setActiveClip(clip.uuid());
+    }
 
     document.body.appendChild(timeUI.dom);
 

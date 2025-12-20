@@ -3,6 +3,7 @@ import AnimationPlayer from '@core/AnimationPlayer';
 import type { TrackLike } from '@core/types';
 import type TimeUIPlugin from '@core/types';
 import TracksUI from '../components/TrackUI';
+import { convertArray } from '@/core/utils';
 
 export default class TracksPlugin implements TimeUIPlugin {
   name = 'TracksPlugin';
@@ -38,10 +39,18 @@ export default class TracksPlugin implements TimeUIPlugin {
       const engine: AnimationEngine | undefined = parent.getEngine();
       const track: TrackLike = parent.tracks()[event.tPos];
       if (track) {
-        track.times[event.kPos] = event.value;
-      }
+        const updatedTimes = Array.from(track.times);
+        updatedTimes[event.kPos] = event.value;
 
-      engine?.updateTrack(event.tPos, track);
+        if (track.times.constructor) {
+          const times = convertArray(updatedTimes, track.times.constructor);
+          track.times = times;
+        } else {
+          track.times = updatedTimes;
+        }
+
+        engine?.active()?.updateTrack(event.tPos, track);
+      }
     });
 
     parent.on('timeUpdate', ({ time }) => {
@@ -52,9 +61,14 @@ export default class TracksPlugin implements TimeUIPlugin {
       this.container.setDuration(parent.getDuration());
       this.updateTracks(parent);
     });
-    parent.on('trackAdd', () => this.updateTracks(parent));
-    parent.on('trackRemove', () => this.updateTracks(parent));
-    parent.on('trackUpdate', () => this.updateTracks(parent));
+
+    parent.on('switchActive', ({ clip }) => {
+      this.updateTracks(parent);
+
+      clip.on('trackAdded', () => this.updateTracks(parent));
+      clip.on('trackRemoved', () => this.updateTracks(parent));
+      clip.on('trackUpdated', () => this.updateTracks(parent));
+    });
   }
 
   render(): TracksUI {

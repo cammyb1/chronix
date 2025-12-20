@@ -5,18 +5,24 @@ export class VanillaAnimationEngine extends AnimationEngine<{}, TrackLike> {
   setTime(t: number) {
     if (!this.root) return;
 
-    for (const track of this.tracks) {
-      const value = this.getValueAtTime(track, t);
-      this.applyValue(this.root, track.name, value);
+    const clip = this.active();
+    if (clip) {
+      for (const track of clip.getTracks()) {
+        const value = this.getValueAtTime(track, t);
+        this.applyValue(this.root, track.name, value);
+      }
     }
     super.setTime(t);
   }
 
   getDuration(): number {
     let max = 0;
-    for (const track of this.tracks) {
-      const lastTime = track.times[track.times.length - 1];
-      if (lastTime > max) max = lastTime;
+    const clip = this.active();
+    if (clip) {
+      for (const track of clip.getTracks()) {
+        const lastTime = track.times[track.times.length - 1];
+        if (lastTime > max) max = lastTime;
+      }
     }
     return max;
   }

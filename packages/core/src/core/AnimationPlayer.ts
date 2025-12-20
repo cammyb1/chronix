@@ -1,11 +1,13 @@
 import { EventBus } from './EventBus';
 import { VanillaAnimationEngine } from './engines/VanillaAnimationEngine';
 import { AnimationEngine } from './AnimationEngine';
-import type { AnimationPlayerConfig, IAnimationEvents } from './types';
+import type { AnimationPlayerConfig, IAnimationEvents, TrackLike } from './types';
+import type Clip from './Clip';
 
-export default class AnimationPlayer<TRoot = any, TTrack extends object = any> extends EventBus<
-  IAnimationEvents<TRoot, TTrack>
-> {
+export default class AnimationPlayer<
+  TRoot = any,
+  TTrack extends TrackLike = TrackLike,
+> extends EventBus<IAnimationEvents<TRoot, TTrack>> {
   protected running: boolean = false;
 
   time: number;
@@ -52,7 +54,7 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
 
   setDuration(dur: number): this {
     this.duration = dur;
-    this.engine?.setDuration(dur);
+    this.engine?.active()?.setDuration(dur);
     return this;
   }
 
@@ -61,7 +63,7 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
   }
 
   clear(): void {
-    this.engine?.clearTracks();
+    this.engine?.active()?.clearTracks();
   }
 
   play(): this {
@@ -93,20 +95,24 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
     return this;
   }
 
+  clips(): Clip<TTrack>[] {
+    return this.engine?.clips || [];
+  }
+
   tracks(): TTrack[] {
-    return this.engine?.getTracks() || [];
+    return this.engine?.active()?.getTracks() || [];
   }
 
-  add(track: TTrack) {
-    this.engine?.addTrack(track);
+  add(track: TTrack): TTrack | undefined {
+    return this.engine?.active()?.addTrack(track);
   }
 
-  remove(track: TTrack) {
-    this.engine?.removeTrack(track);
+  remove(track: TTrack): TTrack | undefined {
+    return this.engine?.active()?.removeTrack(track);
   }
 
-  fromArray(array: TTrack[]) {
-    this.engine?.fromArray(array);
+  createClip(name: string, array: TTrack[]): Clip<TTrack> | undefined {
+    return this.engine?.createClip(name, array);
   }
 
   getTime(): number {
@@ -135,7 +141,7 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
     }
 
     this.engine = intance;
-    this.engine.setDuration(this.duration);
+    this.engine.active()?.setDuration(this.duration);
     this.engine.setTime(this.time);
     this._propagateEngine();
 
@@ -175,14 +181,26 @@ export default class AnimationPlayer<TRoot = any, TTrack extends object = any> e
   private _propagateEngine(): void {
     if (!this.engine) return;
     // Auto-propagate engine events
+    this.engine.on('clipAdded', (e) => this.trigger('clipAdded', e));
+    this.engine.on('clipRemoved', (e) => this.trigger('clipRemoved', e));
+    this.engine.on('clipUpdated', (e) => this.trigger('clipUpdated', e));
+
+    this.engine.on('switchActive', ({ clip, oldClip }) => {
+      if (oldClip) {
+        oldClip.disposeAll();
+      }
+
+      clip.on('trackAdd', (e) => this.trigger('trackAdd', e));
+      clip.on('trackRemove', (e) => this.trigger('trackRemove', e));
+      clip.on('trackUpdate', (e) => this.trigger('trackUpdate', e));
+      this.trigger('switchActive', { clip, oldClip });
+    });
+
+    this.engine.on('rootChange', (e) => this.trigger('rootChange', e));
     this.engine.on('timeUpdate', (e) => this.trigger('timeUpdate', e));
     this.engine.on('durationChange', (e) => {
       this.duration = e.duration;
       this.trigger('durationChange', e);
     });
-    this.engine.on('trackAdd', (e) => this.trigger('trackAdd', e));
-    this.engine.on('trackRemove', (e) => this.trigger('trackRemove', e));
-    this.engine.on('trackUpdate', (e) => this.trigger('trackUpdate', e));
-    this.engine.on('rootChange', (e) => this.trigger('rootChange', e));
   }
 }
