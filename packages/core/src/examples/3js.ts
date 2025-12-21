@@ -8,13 +8,13 @@ import {
   NumberKeyframeTrack,
 } from 'three';
 import { mount } from '../three/utils';
-import { FunctionKeyframeTrack } from '../three/FunctionKeyframeTrack';
 import { Time } from '../core/Time';
 import TimeLineUI from '../core/ui/TimeLineUI';
 import ControlsPlugin from '../core/ui/plugins/ControlsPlugin';
 import TracksPlugin from '../core/ui/plugins/TracksPlugin';
 import AnimationPlayer from '../core/AnimationPlayer';
 import { ThreeAnimationEngine } from '../core/engines/ThreeAnimationEngine';
+import { FunctionKeyframeTrack } from '@/three/FunctionKeyframeTrack';
 
 AnimationPlayer.registerEngine('three', ThreeAnimationEngine);
 
@@ -50,9 +50,8 @@ export default {
     const timeline = new AnimationPlayer({ duration: 2, loop: true }).setEngine('three', box);
     const timeUI = new TimeLineUI({
       plugins: [new ControlsPlugin(), new TracksPlugin()],
-    }).setParent(timeline);
-
-    webgl.scene.add(new DirectionalLightHelper(light));
+      parent: timeline,
+    });
 
     const tracks = [
       new NumberKeyframeTrack('.rotation[x]', [0, 1, 2], [0, Math.PI, 0]),
@@ -65,10 +64,12 @@ export default {
       ),
     ];
 
-    const clip = timeline.createClip('test', tracks);
-    if (clip) {
-      timeline.getEngine()?.setActiveClip(clip.uuid());
-    }
+    const engine = timeline.engine();
+
+    engine?.createClip('test', []);
+    engine?.createClip('test2', tracks);
+
+    webgl.scene.add(new DirectionalLightHelper(light));
 
     document.body.appendChild(timeUI.dom);
 

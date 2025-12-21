@@ -11,6 +11,7 @@ export default class TracksPlugin implements TimeUIPlugin {
 
   constructor() {
     this.container = new TracksUI();
+    this.displayDom(false);
   }
 
   onMount() {
@@ -22,12 +23,33 @@ export default class TracksPlugin implements TimeUIPlugin {
     this.container.clear();
     this.container.setDuration(parent.getDuration());
 
-    parent.tracks().forEach((track, index) => {
+    const tracks = parent.engine()?.active?.getTracks();
+
+    tracks?.forEach((track, index) => {
       this.container.fromTrack(index, track);
     });
   }
 
+  displayDom(value: boolean) {
+    if (value) {
+      this.container.dom.style.display = 'flex';
+    } else {
+      this.container.dom.style.display = 'none';
+    }
+  }
+
   onAttach(parent: AnimationPlayer): void {
+    const checkClips = () => {
+      const clips = parent.engine()?.clips;
+      this.displayDom(clips?.length != 0);
+    };
+
+    checkClips();
+
+    parent.on('clipAdded', () => checkClips());
+    parent.on('clipRemoved', () => checkClips());
+    parent.on('clipUpdated', () => checkClips());
+
     this.container.setDuration(parent.getDuration());
     this.container.timeContainer.rulerTick.setTime(parent.getTime());
 
@@ -36,8 +58,8 @@ export default class TracksPlugin implements TimeUIPlugin {
     });
 
     this.container.on('trackUpdated', (event: any) => {
-      const engine: AnimationEngine | undefined = parent.getEngine();
-      const track: TrackLike = parent.tracks()[event.tPos];
+      const engine: AnimationEngine | undefined = parent.engine();
+      const track: TrackLike | undefined = engine?.active?.getTracks()[event.tPos];
       if (track) {
         const updatedTimes = Array.from(track.times);
         updatedTimes[event.kPos] = event.value;
@@ -49,7 +71,7 @@ export default class TracksPlugin implements TimeUIPlugin {
           track.times = updatedTimes;
         }
 
-        engine?.active()?.updateTrack(event.tPos, track);
+        engine?.active?.updateTrack(event.tPos, track);
       }
     });
 

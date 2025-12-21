@@ -5,7 +5,7 @@ export class VanillaAnimationEngine extends AnimationEngine<{}, TrackLike> {
   setTime(t: number) {
     if (!this.root) return;
 
-    const clip = this.active();
+    const clip = this.active;
     if (clip) {
       for (const track of clip.getTracks()) {
         const value = this.getValueAtTime(track, t);
@@ -17,7 +17,7 @@ export class VanillaAnimationEngine extends AnimationEngine<{}, TrackLike> {
 
   getDuration(): number {
     let max = 0;
-    const clip = this.active();
+    const clip = this.active;
     if (clip) {
       for (const track of clip.getTracks()) {
         const lastTime = track.times[track.times.length - 1];

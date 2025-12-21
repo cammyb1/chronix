@@ -1,18 +1,18 @@
 import type { ChangeEvent, ITrackControlEvents } from '@core/types';
-import { ButtonElement, DivElement, InputElement } from '../BaseUI';
+import { ButtonElement, DivElement, InputElement, SelectElement } from './BaseUI';
 
 export class TrackControlsUI extends DivElement<ITrackControlEvents> {
-  name: InputElement;
+  names: SelectElement;
   duration: InputElement;
 
   constructor() {
     super();
     this.addClass('track-controls');
 
-    this.name = new InputElement('text').addClass('track-input');
+    this.names = new SelectElement().addClass('track-input');
     this.duration = new InputElement('number').addClass('track-input');
 
-    this.name.dom.value = 'Test';
+    this.names.dom.value = 'Test';
 
     this.duration.dom.min = '0';
     this.duration.dom.value = '0.0';
@@ -29,10 +29,10 @@ export class TrackControlsUI extends DivElement<ITrackControlEvents> {
     this.add(play);
     this.add(pause);
     this.add(stop);
-    this.add(this.name);
+    this.add(this.names);
     this.add(this.duration);
 
-    this.name.on('change', (e: ChangeEvent<HTMLInputElement>) => {
+    this.names.on('change', (e: ChangeEvent<HTMLOptionElement>) => {
       if (e.target?.value) {
         this.trigger('updateName', { value: e.target.value });
       }
@@ -47,9 +47,5 @@ export class TrackControlsUI extends DivElement<ITrackControlEvents> {
 
   setDurationValue(value: number) {
     this.duration.dom.value = value.toString();
-  }
-
-  setNameValue(value: string) {
-    this.name.dom.value = value;
   }
 }

@@ -1,6 +1,6 @@
 import AnimationPlayer from '../../AnimationPlayer';
 import type TimeUIPlugin from '@core/types';
-import { TrackControlsUI } from '../components/tracks/TrackControls';
+import { TrackControlsUI } from '../components/TrackControls';
 
 export default class ControlsPlugin implements TimeUIPlugin {
   name = 'ControlPlugin';
@@ -23,8 +23,16 @@ export default class ControlsPlugin implements TimeUIPlugin {
 
     this.container.setDurationValue(this.parent.getDuration());
 
-    this.parent.on('durationChange', ({ duration }) => {
+    parent.on('clipAdded', ({ clip }) => {
+      this.container.names.addOption(clip.name, clip.uuid, false);
+    });
+
+    parent.on('durationChange', ({ duration }) => {
       this.container.setDurationValue(duration);
+    });
+
+    this.container.on('updateName', ({ value }) => {
+      parent.engine()?.setActiveClip(value);
     });
   }
 

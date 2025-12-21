@@ -64,8 +64,9 @@ export default class TracksUI extends DivElement<{ timeupdate: { time: number } 
     this.sideContainer.content.add(kProperty);
 
     const container = new KeyframeContainer();
+    const times = Array.from(track.times);
 
-    track.times.forEach((t, kPos) => {
+    times.forEach((t, kPos) => {
       const kFrames = new KeyframeUI(t, this.duration);
       this.tracks.push({ name: kProperty, frame: kFrames });
       kFrames.on('dragEnd', (ev: any) => this.trigger('trackUpdated', { tPos: tPos, kPos, ...ev }));

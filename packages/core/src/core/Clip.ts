@@ -17,7 +17,7 @@ export default class Clip<ITrack extends TrackLike = TrackLike> extends EventBus
     this.tracks = [];
   }
 
-  uuid(): string {
+  get uuid(): string {
     return this.id;
   }
 

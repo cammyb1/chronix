@@ -71,6 +71,47 @@ export class DivElement<E extends {} = {}> extends UIElement<E, HTMLDivElement> 
   }
 }
 
+export class SelectElement extends UIElement<
+  { change: ChangeEvent<HTMLOptionElement> },
+  HTMLSelectElement
+> {
+  options: UIElement<{}, HTMLOptionElement>[];
+
+  constructor() {
+    super(document.createElement('select'));
+    this.options = [];
+    this.dom.addEventListener('change', (e: Event) => {
+      this.trigger('change', { target: e.target as HTMLOptionElement });
+    });
+  }
+
+  updateOptions() {
+    this.clear();
+    this.options.forEach((option) => this.add(option));
+  }
+
+  addOption(text: string, value: string, isSelected?: boolean) {
+    const element = new UIElement(document.createElement('option'));
+    element.setHTML(text);
+    element.addAttribute('value', value);
+    this.options.push(element);
+    if (isSelected) this.selectOption(this.options.length - 1);
+
+    this.updateOptions();
+  }
+
+  selectOption(index: number) {
+    this.options[index]?.addAttribute('selected', 'true');
+  }
+
+  removeOption(index: number) {
+    if (this.options[index]) {
+      this.options.splice(index, 1);
+      this.updateOptions();
+    }
+  }
+}
+
 export class ButtonElement extends UIElement<{ click: null }, HTMLButtonElement> {
   constructor() {
     super(document.createElement('button'));

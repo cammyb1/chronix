@@ -2,7 +2,6 @@ import { EventBus } from './EventBus';
 import { VanillaAnimationEngine } from './engines/VanillaAnimationEngine';
 import { AnimationEngine } from './AnimationEngine';
 import type { AnimationPlayerConfig, IAnimationEvents, TrackLike } from './types';
-import type Clip from './Clip';
 
 export default class AnimationPlayer<
   TRoot = any,
@@ -28,7 +27,7 @@ export default class AnimationPlayer<
     this.engines.set(name, engineClass);
   }
 
-  protected engine: AnimationEngine<TRoot, TTrack> | undefined;
+  protected _engine: AnimationEngine<TRoot, TTrack> | undefined;
 
   constructor(config: Partial<AnimationPlayerConfig> = {}) {
     super();
@@ -54,7 +53,8 @@ export default class AnimationPlayer<
 
   setDuration(dur: number): this {
     this.duration = dur;
-    this.engine?.active()?.setDuration(dur);
+    this._engine?.active?.setDuration(dur);
+    this.trigger('durationChange', { duration: dur });
     return this;
   }
 
@@ -63,7 +63,7 @@ export default class AnimationPlayer<
   }
 
   clear(): void {
-    this.engine?.active()?.clearTracks();
+    this._engine?.active?.clearTracks();
   }
 
   play(): this {
@@ -95,26 +95,6 @@ export default class AnimationPlayer<
     return this;
   }
 
-  clips(): Clip<TTrack>[] {
-    return this.engine?.clips || [];
-  }
-
-  tracks(): TTrack[] {
-    return this.engine?.active()?.getTracks() || [];
-  }
-
-  add(track: TTrack): TTrack | undefined {
-    return this.engine?.active()?.addTrack(track);
-  }
-
-  remove(track: TTrack): TTrack | undefined {
-    return this.engine?.active()?.removeTrack(track);
-  }
-
-  createClip(name: string, array: TTrack[]): Clip<TTrack> | undefined {
-    return this.engine?.createClip(name, array);
-  }
-
   getTime(): number {
     return this.time;
   }
@@ -140,21 +120,21 @@ export default class AnimationPlayer<
       intance = engine;
     }
 
-    this.engine = intance;
-    this.engine.active()?.setDuration(this.duration);
-    this.engine.setTime(this.time);
+    this._engine = intance;
+    this._engine.active?.setDuration(this.duration);
+    this._engine.setTime(this.time);
     this._propagateEngine();
 
     return this;
   }
 
-  getEngine(): AnimationEngine<TRoot, TTrack> | undefined {
-    return this.engine;
+  engine(): AnimationEngine<TRoot, TTrack> | undefined {
+    return this._engine;
   }
 
   private _updateTime(t: number): void {
     this.time = t;
-    this.engine?.setTime(t);
+    this._engine?.setTime(t);
   }
 
   update(dt: number): void {
@@ -179,16 +159,19 @@ export default class AnimationPlayer<
   }
 
   private _propagateEngine(): void {
-    if (!this.engine) return;
+    if (!this._engine) return;
     // Auto-propagate engine events
-    this.engine.on('clipAdded', (e) => this.trigger('clipAdded', e));
-    this.engine.on('clipRemoved', (e) => this.trigger('clipRemoved', e));
-    this.engine.on('clipUpdated', (e) => this.trigger('clipUpdated', e));
+    this._engine.on('clipAdded', (e) => this.trigger('clipAdded', e));
+    this._engine.on('clipRemoved', (e) => this.trigger('clipRemoved', e));
+    this._engine.on('clipUpdated', (e) => this.trigger('clipUpdated', e));
 
-    this.engine.on('switchActive', ({ clip, oldClip }) => {
+    this._engine.on('switchActive', ({ clip, oldClip }) => {
       if (oldClip) {
         oldClip.disposeAll();
       }
+
+      this.setDuration(clip.duration);
+      this.stop();
 
       clip.on('trackAdd', (e) => this.trigger('trackAdd', e));
       clip.on('trackRemove', (e) => this.trigger('trackRemove', e));
@@ -196,11 +179,7 @@ export default class AnimationPlayer<
       this.trigger('switchActive', { clip, oldClip });
     });
 
-    this.engine.on('rootChange', (e) => this.trigger('rootChange', e));
-    this.engine.on('timeUpdate', (e) => this.trigger('timeUpdate', e));
-    this.engine.on('durationChange', (e) => {
-      this.duration = e.duration;
-      this.trigger('durationChange', e);
-    });
+    this._engine.on('rootChange', (e) => this.trigger('rootChange', e));
+    this._engine.on('timeUpdate', (e) => this.trigger('timeUpdate', e));
   }
 }

@@ -15,7 +15,7 @@ export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> 
     this.clips = [];
   }
 
-  active(): Clip<ITrack> | undefined {
+  get active(): Clip<ITrack> | undefined {
     return this.activeClip ? this.findClipById(this.activeClip) : undefined;
   }
 
@@ -26,7 +26,12 @@ export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> 
       return undefined;
     }
 
-    const oldClip = this.active();
+    const oldClip = this.active;
+
+    if (oldClip) {
+      this.setTime(0);
+    }
+
     this.activeClip = uuid;
     this.trigger('switchActive', { clip, oldClip });
 
@@ -42,12 +47,15 @@ export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> 
 
     const clip = new Clip<ITrack>({ name, duration }).fromArray(array || []);
     this.clips.push(clip);
+    if (this.clips.length === 1) {
+      this.setActiveClip(clip.uuid);
+    }
     this.trigger('clipAdded', { clip });
     return clip;
   }
 
   updateClip(clip: Clip<ITrack>): Clip<ITrack> | undefined {
-    const index = this.clips.findIndex((c) => c.uuid() === clip.uuid());
+    const index = this.clips.findIndex((c) => c.uuid === clip.uuid);
     const existingClip = this.clips[index];
     if (existingClip) {
       const updatedClip = { ...existingClip, ...clip } as Clip<ITrack>;
@@ -59,7 +67,7 @@ export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> 
   }
 
   removeClip(id: string): Clip<ITrack> | undefined {
-    const index = this.clips.findIndex((c) => c.uuid() === id);
+    const index = this.clips.findIndex((c) => c.uuid === id);
     if (index >= 0) {
       const clip: Clip<ITrack> = this.clips.splice(index, 1)[0];
       this.trigger('clipRemoved', { clip });
@@ -78,7 +86,7 @@ export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> 
   }
 
   findClipById(id: string): Clip<ITrack> | undefined {
-    return this.findClip((c) => c.uuid() === id);
+    return this.findClip((c) => c.uuid === id);
   }
 
   findClip(
