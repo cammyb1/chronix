@@ -48,10 +48,7 @@ export default {
     light.position.z = 15;
 
     const timeline = new AnimationPlayer({ duration: 2, loop: true }).setEngine('three', box);
-    const timeUI = new TimeLineUI({
-      plugins: [new ControlsPlugin(), new TracksPlugin()],
-      parent: timeline,
-    });
+    const timeUI = new TimeLineUI(timeline).registerPlugins(ControlsPlugin, TracksPlugin);
 
     const tracks = [
       new NumberKeyframeTrack('.rotation[x]', [0, 1, 2], [0, Math.PI, 0]),

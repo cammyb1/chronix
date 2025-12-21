@@ -76,15 +76,12 @@ export interface IRulerEvent {
   timeupdate: { time: number };
 }
 
-export default interface TimeUIPlugin<T extends UIElement = UIElement> {
-  name: string;
-  onAdd?(): void;
+export default interface IPlugin<T extends UIElement> {
+  init?(): void;
   onMount?(): void;
   onDismount?(): void;
-  onAttach?(parent: AnimationPlayer): void;
-  onDetach?(parent: AnimationPlayer): void;
-  exit?(): void;
-  render(): T;
+  dispose?(): void;
+  render?(): T | undefined;
 }
 
 export interface ITrackControlEvents {

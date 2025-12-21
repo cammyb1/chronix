@@ -1,31 +1,29 @@
-import { DivElement } from './components/BaseUI';
+import { DivElement, UIElement } from './components/BaseUI';
 import AnimationPlayer from '../AnimationPlayer';
-import type TimeUIPlugin from '../types';
-
-export interface TimeLineParams {
-  parent?: AnimationPlayer;
-  plugins?: TimeUIPlugin[];
-}
+import type UIPlugin from './plugins/UIPlugin';
 
 export default class TimeLineUI extends DivElement {
-  parent: AnimationPlayer | undefined;
-  plugins: Map<string, TimeUIPlugin> = new Map();
+  parent: AnimationPlayer;
+  plugins: Map<string, UIPlugin> = new Map();
   _observer: MutationObserver | undefined;
 
-  constructor({ parent, plugins }: TimeLineParams = {}) {
+  constructor(parent: AnimationPlayer) {
     super();
 
     this.addClass('timeline-container');
-    this.setParent(parent);
+    this.parent = parent;
 
     this._observer = new MutationObserver((mutations) => {
-      this.plugins.forEach((plugin) => {
+      this.plugins.forEach((plugin: UIPlugin) => {
+        const target: UIElement | undefined = plugin.render?.();
+        if (!target) return;
+
         const targetAdded = mutations.some((mutation) => {
-          return Array.from(mutation.addedNodes).includes(plugin.render().dom);
+          return Array.from(mutation.addedNodes).includes(target.dom);
         });
 
         const targetRemoved = mutations.some((mutation) => {
-          return Array.from(mutation.removedNodes).includes(plugin.render().dom);
+          return Array.from(mutation.removedNodes).includes(target.dom);
         });
 
         if (targetAdded) {
@@ -39,38 +37,27 @@ export default class TimeLineUI extends DivElement {
     });
 
     this._observer.observe(this.dom, { childList: true });
-
-    if (plugins) {
-      plugins.forEach((plugin) => this.addPlugin(plugin));
-    }
   }
 
-  setParent(p: AnimationPlayer | undefined): this {
-    if (!p) return this;
-    this.plugins.forEach((plugin) => {
-      if (this.parent) {
-        plugin.onDetach?.(this.parent);
-      }
-
-      plugin.onAttach?.(p);
-    });
-    this.parent = p;
+  registerPlugins(...args: Array<new (p: AnimationPlayer) => UIPlugin>): this {
+    args.forEach((plugin) => this.addPlugin(plugin));
     return this;
   }
 
-  addPlugin(plugin: TimeUIPlugin): this {
-    if (this.plugins.has(plugin.name)) return this;
-    this.plugins.set(plugin.name, plugin);
+  addPlugin(Plugin: new (p: AnimationPlayer) => UIPlugin): this {
+    const name = Plugin.name;
+    if (this.plugins.has(name)) return this;
 
-    const target = plugin.render();
+    const instance = new Plugin(this.parent);
+    instance.init?.();
+    this.plugins.set(name, instance);
 
-    this.add(target);
+    const target = instance.render?.();
 
-    plugin.onAdd?.();
-
-    if (this.parent) {
-      plugin.onAttach?.(this.parent);
+    if (target) {
+      this.add(target);
     }
+
     return this;
   }
 
@@ -78,8 +65,13 @@ export default class TimeLineUI extends DivElement {
     const plugin = this.plugins.get(name);
     if (!plugin) return this;
 
-    plugin.exit?.();
-    this.remove(plugin.render());
+    plugin.dispose?.();
+
+    const target = plugin.render?.();
+
+    if (target) {
+      this.remove(target);
+    }
     this.plugins.delete(name);
     return this;
   }

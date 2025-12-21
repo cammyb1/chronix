@@ -1,43 +1,28 @@
-import AnimationPlayer from '../../AnimationPlayer';
-import type TimeUIPlugin from '@core/types';
 import { TrackControlsUI } from '../components/TrackControls';
+import UIPlugin from './UIPlugin';
 
-export default class ControlsPlugin implements TimeUIPlugin {
-  name = 'ControlPlugin';
-  container: TrackControlsUI;
-  parent: AnimationPlayer | undefined;
+export default class ControlsPlugin extends UIPlugin<TrackControlsUI> {
+  container: TrackControlsUI = new TrackControlsUI();
 
-  constructor() {
-    this.container = new TrackControlsUI();
-  }
-
-  onAdd() {
-    this.container.on('play', () => this.parent?.play());
-    this.container.on('pause', () => this.parent?.pause());
-    this.container.on('stop', () => this.parent?.stop());
-    this.container.on('updateDuration', ({ value }) => this.parent?.setDuration(value));
-  }
-
-  onAttach(parent: AnimationPlayer): void {
-    this.parent = parent;
+  init() {
+    this.container.on('play', () => this.parent.play());
+    this.container.on('pause', () => this.parent.pause());
+    this.container.on('stop', () => this.parent.stop());
+    this.container.on('updateDuration', ({ value }) => this.parent.setDuration(value));
 
     this.container.setDurationValue(this.parent.getDuration());
 
-    parent.on('clipAdded', ({ clip }) => {
+    this.parent.on('clipAdded', ({ clip }) => {
       this.container.names.addOption(clip.name, clip.uuid, false);
     });
 
-    parent.on('durationChange', ({ duration }) => {
+    this.parent.on('durationChange', ({ duration }) => {
       this.container.setDurationValue(duration);
     });
 
     this.container.on('updateName', ({ value }) => {
-      parent.engine()?.setActiveClip(value);
+      this.parent.engine()?.setActiveClip(value);
     });
-  }
-
-  onDetach(): void {
-    this.parent = undefined;
   }
 
   render(): TrackControlsUI {
