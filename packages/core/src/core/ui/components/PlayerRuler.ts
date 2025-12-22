@@ -87,6 +87,8 @@ export class RulerTime extends DivElement<{ timeupdate: { time: number } }> {
     // Use a small epsilon for float comparison
     const eps = 0.001;
 
+    const fragment = document.createDocumentFragment();
+
     for (let i = 0; i <= duration + eps; i += step) {
       const tick = document.createElement('div');
       tick.classList.add('ruler-tick');
@@ -107,7 +109,9 @@ export class RulerTime extends DivElement<{ timeupdate: { time: number } }> {
         tick.classList.add('minor');
       }
 
-      this.dom.appendChild(tick);
+      fragment.appendChild(tick);
     }
+
+    this.dom.appendChild(fragment);
   }
 }

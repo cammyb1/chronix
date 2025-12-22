@@ -1,8 +1,8 @@
 import type { AnimationAction } from 'three';
-import type AnimationPlayer from './AnimationPlayer';
 import type { UIElement } from './ui/components/BaseUI';
-import type { AnimationEngine } from './AnimationEngine';
 import type Clip from './Clip';
+import type AnimationPlayer from './AnimationPlayer';
+import type UIPlugin from './ui/plugins/UIPlugin';
 
 export interface TrackLike {
   name: string;
@@ -39,8 +39,7 @@ export interface AnimationPlayerConfig {
   autoStart?: boolean;
   timeScale?: number;
   startTime?: number;
-  engine?: AnimationEngine<any, any> | string;
-  root: any;
+  root?: any;
 }
 
 export interface ITrackEvents<Track extends TrackLike = TrackLike> {
@@ -76,6 +75,10 @@ export interface IRulerEvent {
   timeupdate: { time: number };
 }
 
+export interface IPluginConstructor {
+  new (player: AnimationPlayer, parent: HTMLElement): UIPlugin;
+}
+
 export default interface IPlugin<T extends UIElement> {
   init?(): void;
   onMount?(): void;
@@ -90,6 +93,7 @@ export interface ITrackControlEvents {
   play: null;
   pause: null;
   stop: null;
+  restart: null;
 }
 
 export interface IAnimationEvent {

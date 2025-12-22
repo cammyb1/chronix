@@ -3,9 +3,11 @@ import type IPlugin from '@core/types';
 import type { UIElement } from '../components/BaseUI';
 
 export default class UIPlugin<T extends UIElement = UIElement> implements IPlugin<T> {
-  parent: AnimationPlayer;
+  player: AnimationPlayer;
+  parent: HTMLElement;
 
-  constructor(p: AnimationPlayer) {
+  constructor(pl: AnimationPlayer, p: HTMLElement) {
+    this.player = pl;
     this.parent = p;
   }
 

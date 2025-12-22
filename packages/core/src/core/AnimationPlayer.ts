@@ -1,6 +1,7 @@
 import { EventBus } from './EventBus';
 import { VanillaAnimationEngine } from './engines/VanillaAnimationEngine';
 import { AnimationEngine } from './AnimationEngine';
+import { ThreeAnimationEngine } from './engines/ThreeAnimationEngine';
 import type { AnimationPlayerConfig, IAnimationEvents, TrackLike } from './types';
 
 export default class AnimationPlayer<
@@ -18,6 +19,7 @@ export default class AnimationPlayer<
 
   static {
     this.registerEngine('vanilla', VanillaAnimationEngine);
+    this.registerEngine('three', ThreeAnimationEngine);
   }
 
   static registerEngine(
@@ -39,9 +41,7 @@ export default class AnimationPlayer<
       this.play();
     }
 
-    if (config?.engine) {
-      this.setEngine(config.engine, config.root);
-    } else {
+    if (config.root) {
       this.setEngine('vanilla', config.root);
     }
 

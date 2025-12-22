@@ -12,8 +12,8 @@ export class UIElement<
     this.dom = dom;
   }
 
-  add(element: UIElement<any, HTMLElement>): this {
-    this.dom.appendChild(element.dom);
+  add(...args: UIElement<any, HTMLElement>[]): this {
+    args.forEach((element) => this.dom.appendChild(element.dom));
     return this;
   }
 

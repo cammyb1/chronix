@@ -11,25 +11,25 @@ export default class TracksPlugin extends UIPlugin<TracksUI> {
     this.displayDom(false);
 
     const checkClips = () => {
-      const clips = this.parent.engine()?.clips;
+      const clips = this.player.engine()?.clips;
       this.displayDom(clips?.length != 0);
     };
 
     checkClips();
 
-    this.parent.on('clipAdded', () => checkClips());
-    this.parent.on('clipRemoved', () => checkClips());
-    this.parent.on('clipUpdated', () => checkClips());
+    this.player.on('clipAdded', () => checkClips());
+    this.player.on('clipRemoved', () => checkClips());
+    this.player.on('clipUpdated', () => checkClips());
 
-    this.container.setDuration(this.parent.getDuration());
-    this.container.timeContainer.rulerTick.setTime(this.parent.getTime());
+    this.container.setDuration(this.player.getDuration());
+    this.container.timeContainer.rulerTick.setTime(this.player.getTime());
 
     this.container.on('timeupdate', ({ time }) => {
-      this.parent.seek(time);
+      this.player.seek(time);
     });
 
     this.container.on('trackUpdated', (event: any) => {
-      const engine: AnimationEngine | undefined = this.parent.engine();
+      const engine: AnimationEngine | undefined = this.player.engine();
       const track: TrackLike | undefined = engine?.active?.getTracks()[event.tPos];
       if (track) {
         const updatedTimes = Array.from(track.times);
@@ -46,16 +46,16 @@ export default class TracksPlugin extends UIPlugin<TracksUI> {
       }
     });
 
-    this.parent.on('timeUpdate', ({ time }) => {
+    this.player.on('timeUpdate', ({ time }) => {
       this.container.timeContainer.rulerTick.setTime(time);
     });
 
-    this.parent.on('durationChange', () => {
-      this.container.setDuration(this.parent.getDuration());
+    this.player.on('durationChange', () => {
+      this.container.setDuration(this.player.getDuration());
       this.updateTracks();
     });
 
-    this.parent.on('switchActive', ({ clip }) => {
+    this.player.on('switchActive', ({ clip }) => {
       this.updateTracks();
 
       clip.on('trackAdded', () => this.updateTracks());
@@ -71,9 +71,9 @@ export default class TracksPlugin extends UIPlugin<TracksUI> {
 
   updateTracks() {
     this.container.clear();
-    this.container.setDuration(this.parent.getDuration());
+    this.container.setDuration(this.player.getDuration());
 
-    const tracks = this.parent.engine()?.active?.getTracks();
+    const tracks = this.player.engine()?.active?.getTracks();
 
     tracks?.forEach((track, index) => {
       this.container.fromTrack(index, track);

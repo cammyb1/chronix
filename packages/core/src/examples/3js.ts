@@ -7,16 +7,13 @@ import {
   MeshStandardMaterial,
   NumberKeyframeTrack,
 } from 'three';
-import { mount } from '../three/utils';
-import { Time } from '../core/Time';
-import TimeLineUI from '../core/ui/TimeLineUI';
-import ControlsPlugin from '../core/ui/plugins/ControlsPlugin';
-import TracksPlugin from '../core/ui/plugins/TracksPlugin';
-import AnimationPlayer from '../core/AnimationPlayer';
-import { ThreeAnimationEngine } from '../core/engines/ThreeAnimationEngine';
-import { FunctionKeyframeTrack } from '@/three/FunctionKeyframeTrack';
-
-AnimationPlayer.registerEngine('three', ThreeAnimationEngine);
+import { mount } from '@three/utils';
+import { Time } from '@core/Time';
+import TimeLineUI from '@core/ui/TimeLineUI';
+import ControlsPlugin from '@core/ui/plugins/ControlsPlugin';
+import TracksPlugin from '@core/ui/plugins/TracksPlugin';
+import AnimationPlayer from '@core/AnimationPlayer';
+import { FunctionKeyframeTrack } from '@three/FunctionKeyframeTrack';
 
 export default {
   start() {

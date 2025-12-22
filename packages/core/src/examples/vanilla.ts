@@ -56,11 +56,8 @@ export default {
 
     app.appendChild(canvas);
 
-    const timeline = new AnimationPlayer({ duration: 2, loop: true }).setEngine('vanilla', root);
-    const timeUI = new TimeLineUI({
-      plugins: [new ControlsPlugin(), new TracksPlugin()],
-      parent: timeline,
-    });
+    const timeline = new AnimationPlayer({ duration: 2, loop: true, root });
+    const timeUI = new TimeLineUI(timeline).registerPlugins(ControlsPlugin, TracksPlugin);
 
     const tracks = [
       {

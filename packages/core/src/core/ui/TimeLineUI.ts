@@ -1,6 +1,7 @@
 import { DivElement, UIElement } from './components/BaseUI';
 import AnimationPlayer from '../AnimationPlayer';
 import type UIPlugin from './plugins/UIPlugin';
+import type { IPluginConstructor } from '../types';
 
 export default class TimeLineUI extends DivElement {
   parent: AnimationPlayer;
@@ -39,16 +40,16 @@ export default class TimeLineUI extends DivElement {
     this._observer.observe(this.dom, { childList: true });
   }
 
-  registerPlugins(...args: Array<new (p: AnimationPlayer) => UIPlugin>): this {
+  registerPlugins(...args: Array<IPluginConstructor>): this {
     args.forEach((plugin) => this.addPlugin(plugin));
     return this;
   }
 
-  addPlugin(Plugin: new (p: AnimationPlayer) => UIPlugin): this {
+  addPlugin(Plugin: IPluginConstructor): this {
     const name = Plugin.name;
     if (this.plugins.has(name)) return this;
 
-    const instance = new Plugin(this.parent);
+    const instance = new Plugin(this.parent, this.dom);
     instance.init?.();
     this.plugins.set(name, instance);
 

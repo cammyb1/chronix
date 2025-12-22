@@ -7,7 +7,8 @@
 }
 
 body,
-html, #app {
+html,
+#app {
   width: 100%;
   height: 100%;
 }
@@ -15,18 +16,18 @@ html, #app {
 :root {
   /* Colors - Light Theme */
   --bg-dark: #ffffff;
-  --bg-panel: #f3f3f3;
-  --bg-header: #e0e0e0;
-  --bg-hover: #e8e8e8;
+  --bg-panel: #f8fafc;
+  --bg-header: #f1f5f9;
+  --bg-hover: #e2e8f0;
 
-  --accent-color: #6c6db1;
-  --accent-hover: #5557b6;
+  --accent-color: #4f46e5;
+  --accent-hover: #4338ca;
 
-  --text-main: #333333;
-  --text-muted: #666666;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
 
-  --border-color: #d4d4d4;
-  --border-light: #e5e5e5;
+  --border-color: #e2e8f0;
+  --border-light: #f1f5f9;
 
   /* Spacing & Layout */
   --radius-sm: 4px;
@@ -37,6 +38,22 @@ html, #app {
 
   /* Shadow */
   --shadow-elevation: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='dark'] {
+  --bg-dark: #13141f;
+  --bg-panel: #1c1d2e;
+  --bg-header: #25263a;
+  --bg-hover: #2f314a;
+
+  --accent-color: #818cf8;
+  --accent-hover: #6366f1;
+
+  --text-main: #eef2ff;
+  --text-muted: #94a3b8;
+
+  --border-color: #313248;
+  --border-light: #434460;
 }
 
 #app {
@@ -85,6 +102,14 @@ body {
   align-items: center;
   padding: 0 var(--spacing-sm);
   flex-shrink: 0;
+}
+
+.track-controls-inputs {
+  display: flex;
+}
+
+.track-controls-buttons {
+  display: flex;
 }
 
 .track-sub-header {
