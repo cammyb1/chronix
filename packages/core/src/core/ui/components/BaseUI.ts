@@ -18,7 +18,9 @@ export class UIElement<
   }
 
   remove(element: UIElement<any>): this {
-    this.dom.removeChild(element.dom);
+    if (this.dom.contains(element.dom)) {
+      this.dom.removeChild(element.dom);
+    }
 
     return this;
   }

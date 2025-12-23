@@ -41,7 +41,7 @@ html,
   --shadow-elevation: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-timeline-container[data-theme='dark'] {
+.timeline-container[data-theme='dark'] {
   --bg-dark: #13141f;
   --bg-panel: #1c1d2e;
   --bg-header: #25263a;

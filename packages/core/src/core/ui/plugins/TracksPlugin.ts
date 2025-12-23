@@ -18,6 +18,7 @@ export default class TracksPlugin extends UIPlugin<TracksUI> {
       if (clips?.length !== 0) {
         this.container.remove(this.overlay);
       } else {
+        this.container.clear();
         this.container.add(this.overlay);
       }
     };

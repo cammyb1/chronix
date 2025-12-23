@@ -56,7 +56,7 @@ export default {
 
     app.appendChild(canvas);
 
-    const timeline = new AnimationPlayer({ duration: 2, loop: true, root });
+    const timeline = new AnimationPlayer({ root });
     const timeUI = new TimeLineUI(timeline).registerPlugins(ControlsPlugin, TracksPlugin);
 
     const tracks = [
@@ -74,8 +74,8 @@ export default {
       { name: '.textColor', times: [0, 1, 1.5], values: ['red', 'cyan', 'blue'] },
     ];
 
-    timeline.engine()?.createClip('test', tracks);
-    timeline.engine()?.createClip('test2', []);
+    timeline.engine()?.createClip({ name: 'test', duration: 2, tracks });
+    timeline.engine()?.createClip({ name: 'test2', duration: 10 });
 
     document.body.appendChild(timeUI.dom);
 

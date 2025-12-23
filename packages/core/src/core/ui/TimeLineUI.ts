@@ -12,6 +12,7 @@ export default class TimeLineUI extends DivElement {
     super();
 
     this.addClass('timeline-container');
+    this.addAttribute('data-theme', 'dark')
     this.parent = parent;
 
     this._observer = new MutationObserver((mutations) => {
