@@ -7,14 +7,16 @@ export default class Clip<ITrack extends TrackLike = TrackLike> extends EventBus
   protected id: string;
   name: string;
   duration: number;
+  loop: boolean;
   private tracks: ITrack[];
 
   constructor(config: ClipConfig<ITrack>) {
     super();
     this.id = window.crypto.randomUUID();
     this.name = config.name;
-    this.duration = config.duration;
-    this.tracks = [];
+    this.duration = config.duration || 1;
+    this.loop = config.loop || false;
+    this.tracks = config.tracks || [];
   }
 
   get uuid(): string {
@@ -23,6 +25,10 @@ export default class Clip<ITrack extends TrackLike = TrackLike> extends EventBus
 
   setDuration(dur: number) {
     this.duration = dur;
+  }
+
+  getDuration(): number {
+    return this.duration;
   }
 
   addTrack(track: ITrack): ITrack {

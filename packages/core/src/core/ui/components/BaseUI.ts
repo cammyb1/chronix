@@ -42,12 +42,8 @@ export class UIElement<
     return this;
   }
 
-  addClass(name: string | Array<string>): this {
-    if (Array.isArray(name)) {
-      name.forEach((n) => this.dom.classList.add(n));
-    } else {
-      this.dom.classList.add(name);
-    }
+  addClass(...classes: string[]): this {
+    classes.forEach((n) => this.dom.classList.add(n));
     return this;
   }
 
@@ -56,12 +52,20 @@ export class UIElement<
     return this;
   }
 
-  setTextContent(node: string) {
+  setTextContent(node: string): this {
     this.dom.textContent = node;
+    return this;
   }
 
-  setHTML(node: string) {
+  setHTML(node: string): this {
     this.dom.innerHTML = node;
+    return this;
+  }
+}
+
+export class SpanElement<E extends {} = {}> extends UIElement<E, HTMLSpanElement> {
+  constructor() {
+    super(document.createElement('span'));
   }
 }
 

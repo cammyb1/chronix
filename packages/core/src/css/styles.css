@@ -25,6 +25,7 @@ html,
 
   --text-main: #0f172a;
   --text-muted: #64748b;
+  --text-light: #dddddd;
 
   --border-color: #e2e8f0;
   --border-light: #f1f5f9;
@@ -40,7 +41,7 @@ html,
   --shadow-elevation: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-[data-theme='dark'] {
+timeline-container[data-theme='dark'] {
   --bg-dark: #13141f;
   --bg-panel: #1c1d2e;
   --bg-header: #25263a;
@@ -129,6 +130,21 @@ body {
   scrollbar-width: thin;
 }
 
+.track-body-overlay {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+  color: var(--text-main)
+}
+
 /* Scrollbar styling for Webkit */
 .track-body::-webkit-scrollbar {
   width: 8px;
@@ -188,7 +204,7 @@ body {
 }
 
 .track-input {
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color);
   width: 60px;
   height: 24px;
   border-radius: var(--radius-sm);
@@ -354,6 +370,114 @@ body {
 .ruler-container {
   width: 100%;
   height: 36px;
+}
+
+.modal-container {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-content {
+  background: var(--bg-panel);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-elevation);
+  min-width: 300px;
+  min-height: 150px;
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+}
+
+.modal-header {
+  width: 100%;
+  background: var(--accent-color);
+  padding: var(--spacing-md);
+  color: var(--text-light);
+}
+
+.modal-body {
+  flex-grow: 1;
+  padding: var(--spacing-md);
+  background: var(--bg-dark);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.modal-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.modal-input-wrapper {
+  width: 100%;
+  display: flex;
+}
+
+.modal-input-label {
+  width: 30%;
+  align-self: center;
+}
+
+.modal-input-wrapper input {
+  display: block;
+  width: 50%;
+}
+
+.modal-footer {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent-color);
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: var(--spacing-sm);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.modal-button:disabled {
+  background: var(--border-light);
+  cursor: not-allowed;
+}
+
+.modal-button:disabled:hover {
+  background: var(--border-light);
+}
+
+.modal-button.dark {
+  background-color: var(--text-muted);
+}
+
+.modal-button:hover {
+  background: var(--accent-hover);
+}
+
+.modal-overlay {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(2px);
 }
 
 [data-tooltip]::after,

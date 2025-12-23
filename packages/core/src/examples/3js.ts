@@ -44,7 +44,7 @@ export default {
     light.position.y = 3;
     light.position.z = 15;
 
-    const timeline = new AnimationPlayer({ duration: 2, loop: true }).setEngine('three', box);
+    const timeline = new AnimationPlayer().setEngine('three', box);
     const timeUI = new TimeLineUI(timeline).registerPlugins(ControlsPlugin, TracksPlugin);
 
     const tracks = [
@@ -58,10 +58,8 @@ export default {
       ),
     ];
 
-    const engine = timeline.engine();
-
-    engine?.createClip('test', []);
-    engine?.createClip('test2', tracks);
+    // timeline.engine()?.createClip({ name: 'test', duration: 2 });
+    // timeline.engine()?.createClip({ name: 'test2', duration: 2, loop: true, tracks });
 
     webgl.scene.add(new DirectionalLightHelper(light));
 

@@ -12,9 +12,23 @@ export interface TrackLike {
 }
 
 export interface ClipConfig<ITrack> {
-  duration: number;
+  duration?: number;
   name: string;
+  loop?: boolean;
   tracks?: ITrack[];
+}
+
+export interface ModalInputData {
+  [key: string]: string | number | boolean;
+}
+
+export interface ModalInputItem {
+  label: string;
+  value: string;
+  placeHolder: string;
+  type: string;
+  min?: string,
+  max?: string
 }
 
 export type TypedValue = string | number | boolean;
@@ -31,15 +45,6 @@ export type ChangeEvent<T extends EventTarget = HTMLElement> = {
 export interface IThreeExampleEvents {
   resize: {};
   tick: { dt: number; elapsed: number };
-}
-
-export interface AnimationPlayerConfig {
-  duration?: number;
-  loop?: boolean;
-  autoStart?: boolean;
-  timeScale?: number;
-  startTime?: number;
-  root?: any;
 }
 
 export interface ITrackEvents<Track extends TrackLike = TrackLike> {
@@ -90,6 +95,7 @@ export default interface IPlugin<T extends UIElement> {
 export interface ITrackControlEvents {
   updateDuration: { value: number };
   updateName: { value: string };
+  addClip: null;
   play: null;
   pause: null;
   stop: null;

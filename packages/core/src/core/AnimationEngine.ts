@@ -8,6 +8,7 @@ export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> 
   root: IRoot;
   clips: Clip<ITrack>[];
   protected activeClip?: string;
+  time: number = 0;
 
   constructor(r?: IRoot) {
     super();
@@ -38,14 +39,18 @@ export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> 
     return clip;
   }
 
-  createClip(name: string, array?: ITrack[]): Clip<ITrack> {
-    const duration =
-      array?.reduce((acc, current) => {
-        acc = Math.max(acc, current.times[current.times.length - 1]);
-        return acc;
-      }, 0) || 1;
-
-    const clip = new Clip<ITrack>({ name, duration }).fromArray(array || []);
+  createClip({
+    name,
+    duration,
+    loop,
+    tracks,
+  }: {
+    name: string;
+    duration: number;
+    loop?: boolean;
+    tracks?: ITrack[];
+  }): Clip<ITrack> {
+    const clip = new Clip<ITrack>({ name, duration, loop, tracks });
     this.clips.push(clip);
     if (this.clips.length === 1) {
       this.setActiveClip(clip.uuid);
@@ -70,6 +75,12 @@ export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> 
     const index = this.clips.findIndex((c) => c.uuid === id);
     if (index >= 0) {
       const clip: Clip<ITrack> = this.clips.splice(index, 1)[0];
+
+      if (this.clips.length >= 1) {
+        const newActive = this.clips[0];
+        this.setActiveClip(newActive.uuid);
+      }
+
       this.trigger('clipRemoved', { clip });
     }
     return undefined;
@@ -105,6 +116,7 @@ export class AnimationEngine<IRoot = any, ITrack extends TrackLike = TrackLike> 
   }
 
   setTime(n: number): void {
+    this.time = n;
     this.trigger('timeUpdate', { time: n });
   }
 }

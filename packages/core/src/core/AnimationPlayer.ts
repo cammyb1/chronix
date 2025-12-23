@@ -2,17 +2,13 @@ import { EventBus } from './EventBus';
 import { VanillaAnimationEngine } from './engines/VanillaAnimationEngine';
 import { AnimationEngine } from './AnimationEngine';
 import { ThreeAnimationEngine } from './engines/ThreeAnimationEngine';
-import type { AnimationPlayerConfig, IAnimationEvents, TrackLike } from './types';
+import type { IAnimationEvents, TrackLike } from './types';
 
 export default class AnimationPlayer<
   TRoot = any,
   TTrack extends TrackLike = TrackLike,
 > extends EventBus<IAnimationEvents<TRoot, TTrack>> {
   protected running: boolean = false;
-
-  time: number;
-  duration: number;
-  loop: boolean;
 
   protected static engines: Map<string, new (...args: any[]) => AnimationEngine<any, any>> =
     new Map();
@@ -31,35 +27,22 @@ export default class AnimationPlayer<
 
   protected _engine: AnimationEngine<TRoot, TTrack> | undefined;
 
-  constructor(config: Partial<AnimationPlayerConfig> = {}) {
+  constructor(config: { root?: TRoot } = {}) {
     super();
-    this.duration = config?.duration || 1;
-    this.loop = config?.loop || false;
-    this.time = 0;
-
-    if (config.autoStart) {
-      this.play();
-    }
 
     if (config.root) {
       this.setEngine('vanilla', config.root);
     }
-
-    if (config?.startTime) {
-      this.time = config.startTime;
-      this.seek(config.startTime);
-    }
   }
 
   setDuration(dur: number): this {
-    this.duration = dur;
     this._engine?.active?.setDuration(dur);
     this.trigger('durationChange', { duration: dur });
     return this;
   }
 
   getDuration(): number {
-    return this.duration;
+    return this._engine?.active?.getDuration() || 0;
   }
 
   clear(): void {
@@ -96,7 +79,7 @@ export default class AnimationPlayer<
   }
 
   getTime(): number {
-    return this.time;
+    return this.engine()?.time || 0;
   }
 
   isRunning(): boolean {
@@ -121,8 +104,6 @@ export default class AnimationPlayer<
     }
 
     this._engine = intance;
-    this._engine.active?.setDuration(this.duration);
-    this._engine.setTime(this.time);
     this._propagateEngine();
 
     return this;
@@ -132,30 +113,32 @@ export default class AnimationPlayer<
     return this._engine;
   }
 
-  private _updateTime(t: number): void {
-    this.time = t;
-    this._engine?.setTime(t);
-  }
-
   update(dt: number): void {
-    if (!this.running) return;
-    let time = this.time + dt;
+    if (!this.running || !this._engine) return;
+    const active = this._engine.active;
+    if (!active) return;
 
-    if (!this.loop && time > this.duration) {
-      time = this.duration;
+    const duration = active.getDuration();
+
+    let time = this._engine?.time + dt || 0;
+    if (!active?.loop && time > duration) {
+      time = duration;
       this.pause();
-    } else if (time > this.duration) {
+    } else if (time > duration) {
       time = 0;
     }
 
-    this._updateTime(time);
+    this._engine?.setTime(time);
   }
 
   seek(t: number) {
-    if (t < 0 || t > this.duration) {
-      throw new Error(`Time must be between 0 and ${this.duration}`);
+    if (!this._engine) return;
+    const active = this._engine.active;
+    if (!active) return;
+    if (t < 0 || t > active.getDuration()) {
+      throw new Error(`Time must be between 0 and ${active.getDuration()}`);
     }
-    this._updateTime(t);
+    this._engine?.setTime(t);
   }
 
   private _propagateEngine(): void {

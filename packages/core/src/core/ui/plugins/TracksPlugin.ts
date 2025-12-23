@@ -3,16 +3,23 @@ import type { TrackLike } from '@core/types';
 import TracksUI from '../components/TrackUI';
 import { convertArray } from '@/core/utils';
 import UIPlugin from './UIPlugin';
+import { DivElement, SpanElement } from '../components/BaseUI';
 
 export default class TracksPlugin extends UIPlugin<TracksUI> {
   container: TracksUI = new TracksUI();
+  overlay: DivElement = new DivElement()
+    .addClass('track-body-overlay')
+    .add(new SpanElement().setTextContent('Missing clips'));
 
   init() {
-    this.displayDom(false);
-
     const checkClips = () => {
       const clips = this.player.engine()?.clips;
-      this.displayDom(clips?.length != 0);
+
+      if (clips?.length !== 0) {
+        this.container.remove(this.overlay);
+      } else {
+        this.container.add(this.overlay);
+      }
     };
 
     checkClips();
@@ -78,14 +85,6 @@ export default class TracksPlugin extends UIPlugin<TracksUI> {
     tracks?.forEach((track, index) => {
       this.container.fromTrack(index, track);
     });
-  }
-
-  displayDom(value: boolean) {
-    if (value) {
-      this.container.dom.style.display = 'flex';
-    } else {
-      this.container.dom.style.display = 'none';
-    }
   }
 
   render(): TracksUI {
