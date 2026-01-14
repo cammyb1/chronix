@@ -1,4 +1,4 @@
 import './css/styles.css';
-import BasicExample from './examples/3js';
+import BasicExample from './examples/vanilla';
 
 BasicExample.start();
