@@ -3,6 +3,9 @@ A typescript library for managing animations based on the Three.js Animation Sys
 
 ![](https://iili.io/f8Dk4Yx.png)
 
+> [!WARNING]
+> This repo is under heavy development, dont expect it to be perfect.
+
 ### Table of contents
 - [Requirements](#requirements)
 - [Usage](#usage)
@@ -29,8 +32,3 @@ React wrapper is on the way.
 ### Modularity
 The project is thought to be modular in any way, ui included.
 My knowledge in ui design is poor so don’t expect a something revolutionary.
-
-
-
-> [!WARNING]
-> This repo is under heavy development, dont expect it to be perfect.
