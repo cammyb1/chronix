@@ -22,7 +22,7 @@ bun version >=1.3.3
 just run bun install and let the tool do his thing. to test the core just run:
 
 ```sh
-bun dev:core
+bun dev:
 ```
 
 ### Why?
